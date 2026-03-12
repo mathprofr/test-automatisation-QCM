@@ -1,0 +1,132 @@
+{
+  "kind": "drive#file",
+  "id": "17jUob-WAdvaiE2wpqDQmIE6uoGD3okzJ",
+  "name": "Chapitre 16 : Fluide au repos.json",
+  "mimeType": "application/json",
+  "starred": false,
+  "trashed": false,
+  "explicitlyTrashed": false,
+  "parents": [
+    "17zra89dMkka60Dl6-5_crweCAQFb-pIq"
+  ],
+  "spaces": [
+    "drive"
+  ],
+  "version": "2",
+  "webContentLink": "https://drive.google.com/uc?id=17jUob-WAdvaiE2wpqDQmIE6uoGD3okzJ&export=download",
+  "webViewLink": "https://drive.google.com/file/d/17jUob-WAdvaiE2wpqDQmIE6uoGD3okzJ/view?usp=drivesdk",
+  "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/json",
+  "hasThumbnail": false,
+  "thumbnailVersion": "0",
+  "viewedByMe": false,
+  "createdTime": "2026-03-11T23:51:51.716Z",
+  "modifiedTime": "2026-03-11T23:51:52.841Z",
+  "modifiedByMeTime": "2026-03-11T23:51:52.841Z",
+  "modifiedByMe": true,
+  "owners": [
+    {
+      "kind": "drive#user",
+      "displayName": "Mathis PLASSART GINNAIN",
+      "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIsXiqvm-VK4C14ApKH009pzUoi83QokeffM2s2Q9OXAOWiFA=s64",
+      "me": true,
+      "permissionId": "11778924035177668367",
+      "emailAddress": "mathis.plassartginnain10@gmail.com"
+    }
+  ],
+  "lastModifyingUser": {
+    "kind": "drive#user",
+    "displayName": "Mathis PLASSART GINNAIN",
+    "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIsXiqvm-VK4C14ApKH009pzUoi83QokeffM2s2Q9OXAOWiFA=s64",
+    "me": true,
+    "permissionId": "11778924035177668367",
+    "emailAddress": "mathis.plassartginnain10@gmail.com"
+  },
+  "shared": true,
+  "ownedByMe": true,
+  "downloadRestrictions": {
+    "itemDownloadRestriction": {
+      "restrictedForReaders": false,
+      "restrictedForWriters": false
+    },
+    "effectiveDownloadRestrictionWithContext": {
+      "restrictedForReaders": false,
+      "restrictedForWriters": false
+    }
+  },
+  "capabilities": {
+    "canAcceptOwnership": false,
+    "canAddChildren": false,
+    "canAddMyDriveParent": false,
+    "canChangeCopyRequiresWriterPermission": true,
+    "canChangeItemDownloadRestriction": true,
+    "canChangeSecurityUpdateEnabled": false,
+    "canChangeViewersCanCopyContent": true,
+    "canComment": true,
+    "canCopy": true,
+    "canDelete": true,
+    "canDisableInheritedPermissions": false,
+    "canDownload": true,
+    "canEdit": true,
+    "canEnableInheritedPermissions": true,
+    "canListChildren": false,
+    "canModifyContent": true,
+    "canModifyContentRestriction": true,
+    "canModifyEditorContentRestriction": true,
+    "canModifyOwnerContentRestriction": true,
+    "canModifyLabels": false,
+    "canMoveChildrenWithinDrive": false,
+    "canMoveItemIntoTeamDrive": true,
+    "canMoveItemOutOfDrive": true,
+    "canMoveItemWithinDrive": true,
+    "canReadLabels": false,
+    "canReadRevisions": true,
+    "canRemoveChildren": false,
+    "canRemoveContentRestriction": false,
+    "canRemoveMyDriveParent": true,
+    "canRename": true,
+    "canShare": true,
+    "canTrash": true,
+    "canUntrash": true
+  },
+  "viewersCanCopyContent": true,
+  "copyRequiresWriterPermission": false,
+  "writersCanShare": true,
+  "permissions": [
+    {
+      "kind": "drive#permission",
+      "id": "anyoneWithLink",
+      "type": "anyone",
+      "role": "writer",
+      "allowFileDiscovery": false
+    },
+    {
+      "kind": "drive#permission",
+      "id": "11778924035177668367",
+      "type": "user",
+      "emailAddress": "mathis.plassartginnain10@gmail.com",
+      "role": "owner",
+      "displayName": "mathis.plassartginnain10",
+      "deleted": false,
+      "pendingOwner": false
+    }
+  ],
+  "permissionIds": [
+    "anyoneWithLink",
+    "11778924035177668367"
+  ],
+  "originalFilename": "Chapitre 16 : Fluide au repos.json",
+  "fullFileExtension": "json",
+  "fileExtension": "json",
+  "md5Checksum": "771d23d0c3f995c663356302517e96c7",
+  "sha1Checksum": "f536614ad66519d03bfdbbf9d6cc5a44db0b99af",
+  "sha256Checksum": "3c93780248ae82255bb3e7af940d943d4d68be67375a40102c87a4c36de95425",
+  "size": "1680",
+  "quotaBytesUsed": "1680",
+  "headRevisionId": "0B7WFk0QSqfQjZVQ0T1BNc2VaZGR0cGJaWHVZeGJ0MGdya3c0PQ",
+  "isAppAuthorized": true,
+  "linkShareMetadata": {
+    "securityUpdateEligible": false,
+    "securityUpdateEnabled": true
+  },
+  "inheritedPermissionsDisabled": false
+}
