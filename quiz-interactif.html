@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Interactif</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --accent: #7c6aff;
+    --accent2: #ff6a9e;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --correct: #2dff9e;
+    --wrong: #ff4d6d;
+    --border: rgba(124,106,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,106,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 80% 80%, rgba(255,106,158,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(106,255,212,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .tab:hover:not(.active) {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--surface);
+    animation: fadeUp 0.5s ease;
+  }
+
+  .upload-zone:hover, .upload-zone.drag {
+    border-color: var(--accent);
+    background: rgba(124,106,255,0.05);
+  }
+
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .upload-zone p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .upload-zone strong {
+    color: var(--accent);
+  }
+
+  #fileInput { display: none; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Score pill */
+  .score-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .score-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.4s ease;
+    transition: border-color 0.3s;
+  }
+
+  .question-card:hover {
+    border-color: rgba(124,106,255,0.4);
+  }
+
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .q-number::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    color: white;
+  }
+
+  /* Choices */
+  .choices {
+    display: grid;
+    gap: 8px;
+  }
+
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: var(--text);
+    text-align: left;
+  }
+
+  .choice:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: rgba(124,106,255,0.1);
+  }
+
+  .choice.selected {
+    border-color: var(--accent);
+    background: rgba(124,106,255,0.15);
+  }
+
+  .choice.correct {
+    border-color: var(--correct);
+    background: rgba(45,255,158,0.1);
+    color: var(--correct);
+  }
+
+  .choice.wrong {
+    border-color: var(--wrong);
+    background: rgba(255,77,109,0.1);
+    color: var(--wrong);
+  }
+
+  .choice.disabled { cursor: default; }
+
+  .choice-letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .correct .choice-letter { background: var(--correct); border-color: var(--correct); color: #0a0a0f; }
+  .wrong .choice-letter { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .selected .choice-letter { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Explanation */
+  .explanation {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(106,255,212,0.06);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    color: var(--accent3);
+    line-height: 1.6;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .explanation.show { display: block; }
+
+  /* Exercices */
+  .exo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .exo-number {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .exo-enonce {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  .toggle-corrige {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-corrige:hover {
+    background: rgba(255,106,158,0.1);
+  }
+
+  .corrige {
+    margin-top: 14px;
+    padding: 16px;
+    background: rgba(255,106,158,0.05);
+    border: 1px solid rgba(255,106,158,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    display: none;
+  }
+
+  .corrige.show { display: block; animation: fadeUp 0.3s ease; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.03em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #9480ff;
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  /* Result screen */
+  .result-screen {
+    text-align: center;
+    padding: 48px 24px;
+    animation: fadeUp 0.6s ease;
+  }
+
+  .result-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .result-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto 32px;
+  }
+
+  .result-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .result-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .result-stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* JSON input zone */
+  .json-input-zone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .json-input-zone label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .json-textarea {
+    width: 100%;
+    height: 140px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 12px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  .json-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  /* Hidden */
+  .hidden { display: none !important; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">⚡ Quiz Engine</div>
+    <h1>Quiz Interactif</h1>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('quiz')">QCM</button>
+    <button class="tab" onclick="switchTab('exos')">Exercices</button>
+    <button class="tab" onclick="switchTab('import')">Importer JSON</button>
+  </div>
+
+  <!-- QUIZ TAB -->
+  <div id="tab-quiz">
+    <div id="quiz-setup">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <span class="upload-icon">📋</span>
+        <p>Colle ici le <strong>JSON généré par n8n</strong><br>ou clique pour charger un fichier</p>
+      </div>
+      <input type="file" id="fileInput" accept=".json" onchange="loadFile(event)">
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="loadDemo()">▶ Charger démo</button>
+      </div>
+    </div>
+
+    <div id="quiz-running" class="hidden">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="score-pill">
+        <span id="questionCounter">Question 1 / 10</span>
+        <span>Score : <span class="score-num" id="scoreDisplay">0</span></span>
+      </div>
+      <div id="questionsContainer"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="resetQuiz()">↺ Recommencer</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="display:none">Suivant →</button>
+      </div>
+    </div>
+
+    <div id="quiz-result" class="hidden">
+      <div class="result-screen">
+        <div class="result-big" id="finalScore">0%</div>
+        <div class="result-label">Score final</div>
+        <div class="result-grid">
+          <div class="result-stat">
+            <div class="result-stat-num" id="statCorrect" style="color:var(--correct)">0</div>
+            <div class="result-stat-label">Correctes</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="statWrong" style="color:var(--wrong)">0</div>
+            <div class="result-stat-label">Fausses</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="statTotal">0</div>
+            <div class="result-stat-label">Total</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="resetQuiz()">↺ Refaire</button>
+          <button class="btn btn-primary" onclick="reviewAnswers()">Revoir les réponses</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXOS TAB -->
+  <div id="tab-exos" class="hidden">
+    <div id="exosContainer">
+      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <span class="upload-icon">✏️</span>
+        <p>Charge un <strong>fichier JSON n8n</strong><br>ou clique sur "Charger démo"</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="loadDemo()">▶ Charger démo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT TAB -->
+  <div id="tab-import" class="hidden">
+    <div class="json-input-zone">
+      <label>Colle ton JSON n8n ici</label>
+      <textarea class="json-textarea" id="jsonPaste" placeholder='{
+  "titre": "Mon cours",
+  "questions": [...],
+  "exercices": [...]
+}'></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="importJSON()">✓ Charger le quiz</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let quizData = null;
+let currentQ = 0;
+let score = 0;
+let answered = [];
+let mode = 'quiz';
+
+// ── Demo data ──────────────────────────────────────────
+const DEMO = {
+  titre: "Les Ondes — Physique Terminale",
+  questions: [
+    {
+      question: "Quelle est la relation entre la fréquence f et la période T d'une onde ?",
+      type: "qcm",
+      choix: ["f = T", "f = 1/T", "f = T²", "f = 2T"],
+      reponse: "f = 1/T",
+      explication: "La fréquence est l'inverse de la période : f = 1/T. Si T = 0,01 s, alors f = 100 Hz."
+    },
+    {
+      question: "Quelle est l'unité de la fréquence dans le système international ?",
+      type: "qcm",
+      choix: ["Mètre (m)", "Seconde (s)", "Hertz (Hz)", "Newton (N)"],
+      reponse: "Hertz (Hz)",
+      explication: "La fréquence se mesure en Hertz (Hz), équivalent à des oscillations par seconde."
+    },
+    {
+      question: "La célérité d'une onde dans un milieu dépend de :",
+      type: "qcm",
+      choix: ["La fréquence uniquement", "L'amplitude uniquement", "La nature du milieu", "La durée d'émission"],
+      reponse: "La nature du milieu",
+      explication: "La célérité dépend des propriétés du milieu (élasticité, densité), pas de la fréquence ni de l'amplitude."
+    },
+    {
+      question: "Un son de fréquence 440 Hz a une période de :",
+      type: "qcm",
+      choix: ["0,00227 s", "440 s", "0,044 s", "4,4 × 10⁻¹ s"],
+      reponse: "0,00227 s",
+      explication: "T = 1/f = 1/440 ≈ 0,00227 s. Le la3 vibre 440 fois par seconde."
+    },
+    {
+      question: "Le phénomène de diffraction est plus marqué quand :",
+      type: "qcm",
+      choix: ["λ >> taille obstacle", "λ << taille obstacle", "λ = 0", "L'onde est transversale"],
+      reponse: "λ >> taille obstacle",
+      explication: "La diffraction est maximale quand la longueur d'onde est grande devant l'obstacle ou l'ouverture."
+    }
+  ],
+  exercices: [
+    {
+      enonce: "Un émetteur émet une onde sonore de fréquence f = 680 Hz. La célérité du son dans l'air est v = 340 m/s.\n\n1. Calculer la période T de cette onde.\n2. Calculer la longueur d'onde λ.\n3. Après avoir traversé une ouverture de 0,5 m, observe-t-on un phénomène de diffraction notable ?",
+      corrige: "1. T = 1/f = 1/680 ≈ 1,47 × 10⁻³ s\n\n2. λ = v/f = 340/680 = 0,5 m\n\n3. λ = 0,5 m = taille de l'ouverture → diffraction notable car λ est du même ordre de grandeur que l'ouverture. Si λ >> ouverture, la diffraction serait maximale."
+    },
+    {
+      enonce: "On observe à la surface de l'eau deux ondes circulaires créées par deux sources S₁ et S₂ vibrant en phase à f = 10 Hz. La célérité des ondes est v = 0,20 m/s.\n\n1. Calculer λ.\n2. En un point M, on mesure |S₁M − S₂M| = 0,03 m. Ce point est-il en interférence constructive ou destructive ?",
+      corrige: "1. λ = v/f = 0,20/10 = 0,02 m = 2 cm\n\n2. Δ = |S₁M − S₂M| = 0,03 m\nΔ/λ = 0,03/0,02 = 1,5 = 3/2\n\nComme Δ = (2k+1)λ/2 avec k=1, le point M est en interférence DESTRUCTIVE (ventre de repos)."
+    }
+  ]
+};
+
+// ── Tab switching ──────────────────────────────────────
+function switchTab(tab) {
+  mode = tab;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['quiz','exos','import'][i] === tab);
+  });
+  document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
+  document.getElementById('tab-exos').classList.toggle('hidden', tab !== 'exos');
+  document.getElementById('tab-import').classList.toggle('hidden', tab !== 'import');
+}
+
+// ── Load demo ──────────────────────────────────────────
+function loadDemo() {
+  quizData = DEMO;
+  initQuiz();
+  renderExos();
+}
+
+// ── Load file ──────────────────────────────────────────
+function loadFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      quizData = JSON.parse(ev.target.result);
+      initQuiz();
+      renderExos();
+      switchTab('quiz');
+    } catch {
+      alert('JSON invalide');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Import JSON ────────────────────────────────────────
+function importJSON() {
+  try {
+    quizData = JSON.parse(document.getElementById('jsonPaste').value);
+    initQuiz();
+    renderExos();
+    switchTab('quiz');
+  } catch {
+    alert('JSON invalide — vérifie le format');
+  }
+}
+
+// ── Init quiz ──────────────────────────────────────────
+function initQuiz() {
+  currentQ = 0;
+  score = 0;
+  answered = new Array(quizData.questions.length).fill(null);
+
+  document.getElementById('quiz-setup').classList.add('hidden');
+  document.getElementById('quiz-running').classList.remove('hidden');
+  document.getElementById('quiz-result').classList.add('hidden');
+
+  renderQuestion();
+}
+
+// ── Render question ────────────────────────────────────
+function renderQuestion() {
+  const q = quizData.questions[currentQ];
+  const total = quizData.questions.length;
+
+  document.getElementById('progressFill').style.width = ((currentQ / total) * 100) + '%';
+  document.getElementById('questionCounter').textContent = `Question ${currentQ + 1} / ${total}`;
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.innerHTML = `
+    <div class="q-number">Question ${currentQ + 1}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="expl">${q.explication || ''}</div>
+  `;
+  container.appendChild(card);
+
+  const choicesEl = card.querySelector('#choices');
+  q.choix.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span>${c}`;
+    btn.onclick = () => selectAnswer(c, q.reponse, i);
+    choicesEl.appendChild(btn);
+  });
+}
+
+// ── Select answer ──────────────────────────────────────
+function selectAnswer(chosen, correct, idx) {
+  const choices = document.querySelectorAll('.choice');
+  const expl = document.getElementById('expl');
+  const isCorrect = chosen === correct;
+
+  if (isCorrect) score++;
+  answered[currentQ] = { chosen, correct, isCorrect };
+
+  choices.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    btn.onclick = null;
+    const choix = quizData.questions[currentQ].choix;
+    if (choix[i] === correct) btn.classList.add('correct');
+    else if (i === idx && !isCorrect) btn.classList.add('wrong');
+  });
+
+  expl.classList.add('show');
+  document.getElementById('scoreDisplay').textContent = score;
+
+  const isLast = currentQ === quizData.questions.length - 1;
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'inline-flex';
+  nextBtn.textContent = isLast ? 'Voir résultats ✓' : 'Suivant →';
+}
+
+// ── Next question ──────────────────────────────────────
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= quizData.questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ── Show result ────────────────────────────────────────
+function showResult() {
+  const total = quizData.questions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('quiz-running').classList.add('hidden');
+  document.getElementById('quiz-result').classList.remove('hidden');
+
+  document.getElementById('finalScore').textContent = pct + '%';
+  document.getElementById('statCorrect').textContent = score;
+  document.getElementById('statWrong').textContent = total - score;
+  document.getElementById('statTotal').textContent = total;
+}
+
+// ── Review ─────────────────────────────────────────────
+function reviewAnswers() {
+  currentQ = 0;
+  score = 0;
+  document.getElementById('quiz-result').classList.add('hidden');
+  document.getElementById('quiz-running').classList.remove('hidden');
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  quizData.questions.forEach((q, qi) => {
+    const ans = answered[qi];
+    const card = document.createElement('div');
+    card.className = 'question-card';
+
+    let choicesHTML = '';
+    q.choix.forEach((c, i) => {
+      let cls = 'choice disabled';
+      if (c === q.reponse) cls += ' correct';
+      else if (ans && c === ans.chosen && !ans.isCorrect) cls += ' wrong';
+      choicesHTML += `<div class="${cls}"><span class="choice-letter">${letters[i]}</span>${c}</div>`;
+    });
+
+    card.innerHTML = `
+      <div class="q-number">Question ${qi + 1}</div>
+      <div class="q-text">${q.question}</div>
+      <div class="choices">${choicesHTML}</div>
+      ${q.explication ? `<div class="explanation show">${q.explication}</div>` : ''}
+    `;
+    container.appendChild(card);
+  });
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('questionCounter').textContent = `Révision — ${quizData.questions.length} questions`;
+}
+
+// ── Reset ──────────────────────────────────────────────
+function resetQuiz() {
+  quizData = null;
+  document.getElementById('quiz-setup').classList.remove('hidden');
+  document.getElementById('quiz-running').classList.add('hidden');
+  document.getElementById('quiz-result').classList.add('hidden');
+}
+
+// ── Render exercices ───────────────────────────────────
+function renderExos() {
+  if (!quizData || !quizData.exercices) return;
+  const container = document.getElementById('exosContainer');
+  container.innerHTML = '';
+
+  if (quizData.titre) {
+    const t = document.createElement('div');
+    t.style.cssText = 'font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:24px;';
+    t.textContent = quizData.titre;
+    container.appendChild(t);
+  }
+
+  quizData.exercices.forEach((ex, i) => {
+    const card = document.createElement('div');
+    card.className = 'exo-card';
+    card.innerHTML = `
+      <div class="exo-number">Exercice ${i + 1}</div>
+      <div class="exo-enonce">${ex.enonce.replace(/\n/g, '<br>')}</div>
+      <button class="toggle-corrige" onclick="toggleCorrige(${i})">
+        <span id="corrige-icon-${i}">▼</span> Voir le corrigé
+      </button>
+      <div class="corrige" id="corrige-${i}">${ex.corrige.replace(/\n/g, '<br>')}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function toggleCorrige(i) {
+  const el = document.getElementById(`corrige-${i}`);
+  const icon = document.getElementById(`corrige-icon-${i}`);
+  el.classList.toggle('show');
+  icon.textContent = el.classList.contains('show') ? '▲' : '▼';
+}
+
+// ── Drag & drop ────────────────────────────────────────
+const zone = document.getElementById('uploadZone');
+if (zone) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try { quizData = JSON.parse(ev.target.result); initQuiz(); renderExos(); } catch { alert('JSON invalide'); }
+      };
+      reader.readAsText(file);
+    }
+  });
+}
+</script>
+</body>
+</html>
