@@ -808,16 +808,25 @@ function renderQuestion() {
 function selectAnswer(chosen, correct, idx) {
   const choices = document.querySelectorAll('.choice');
   const expl = document.getElementById('expl');
-  const isCorrect = chosen === correct;
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  const q = quizData.questions[currentQ];
+  
+  // Normalise : si reponse est une lettre (A/B/C/D), convertit en texte
+  let correctText = correct;
+  if (/^[A-E]$/.test(correct.trim())) {
+    const idx2 = letters.indexOf(correct.trim());
+    if (idx2 >= 0 && q.choix[idx2]) correctText = q.choix[idx2];
+  }
+  
+  const isCorrect = chosen === correctText;
  
   if (isCorrect) score++;
-  answered[currentQ] = { chosen, correct, isCorrect };
+  answered[currentQ] = { chosen, correct: correctText, isCorrect };
  
   choices.forEach((btn, i) => {
     btn.classList.add('disabled');
     btn.onclick = null;
-    const choix = quizData.questions[currentQ].choix;
-    if (choix[i] === correct) btn.classList.add('correct');
+    if (q.choix[i] === correctText) btn.classList.add('correct');
     else if (i === idx && !isCorrect) btn.classList.add('wrong');
   });
  
