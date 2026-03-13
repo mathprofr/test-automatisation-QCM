@@ -1,181 +1,276 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine - Version Originale Stable</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #050508; --surface: #0f0f17; --accent: #7c6aff;
-            --text: #e8e8f0; --muted: #6b6b80; --correct: #2dff9e;
-            --wrong: #ff4d6d; --border: rgba(124, 106, 255, 0.15);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
-        .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
-        .header { text-align: center; margin-bottom: 30px; font-family: 'Syne'; }
-        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .choices { display: grid; gap: 10px; margin-top: 20px; }
-        .choice { 
-            display: block; width: 100%; padding: 15px; 
-            background: #161621; border: 1px solid transparent; 
-            border-radius: 10px; cursor: pointer; color: var(--text); 
-            font-family: inherit; text-align: left; transition: 0.2s;
-        }
-        .choice:hover:not(:disabled) { border-color: var(--accent); }
-        .choice.correct { border-color: var(--correct) !important; background: rgba(45, 255, 158, 0.1) !important; color: var(--correct); }
-        .choice.wrong { border-color: var(--wrong) !important; background: rgba(255, 77, 109, 0.1) !important; color: var(--wrong); }
-        .btn { 
-            padding: 12px 25px; border-radius: 8px; border: none; 
-            background: var(--accent); color: white; font-weight: 700; 
-            cursor: pointer; font-family: 'Syne'; margin-top: 15px;
-        }
-        .hidden { display: none !important; }
-        .expl { margin-top: 15px; padding: 15px; background: rgba(124, 106, 255, 0.05); border-left: 3px solid var(--accent); font-size: 13px; color: #6affd4; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Engine IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --accent: #7c6aff;
+    --accent2: #ff6a9e;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --correct: #2dff9e;
+    --wrong: #ff4d6d;
+    --border: rgba(124,106,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+
+  /* Fond Animé */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,106,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 60% at 80% 80%, rgba(255,106,158,0.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+
+  /* ── Welcome Screen ── */
+  #welcome-screen {
+    position: fixed; inset: 0; background: #05050a; z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  #welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); }
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
+  .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -50px; }
+  .welcome-title { font-family: 'Syne', sans-serif; font-size: clamp(40px, 8vw, 80px); font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
+  /* UI Elements */
+  .header { text-align: center; margin-bottom: 32px; }
+  .badge { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 2px; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--border); }
+  .tab { flex: 1; padding: 10px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+  .tab.active { background: var(--accent); color: white; }
+
+  /* Choice Cards */
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .upload-zone { border: 1px solid var(--border); background: var(--surface); padding: 30px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
+  .upload-zone:hover { border-color: var(--accent); background: var(--surface2); }
+  
+  /* Quiz & Question */
+  .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; animation: fadeUp 0.4s ease; }
+  .q-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 20px; color: white; }
+  .choices { display: grid; gap: 10px; }
+  .choice { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface2); border: 1px solid transparent; border-radius: 8px; cursor: pointer; color: var(--text); font-family: inherit; text-align: left; transition: 0.2s; }
+  .choice.correct { border-color: var(--correct); background: rgba(45,255,158,0.15); color: var(--correct); }
+  .choice.wrong { border-color: var(--wrong); background: rgba(255,77,109,0.15); color: var(--wrong); }
+  .choice.disabled { cursor: default; pointer-events: none; }
+  
+  .explanation { margin-top: 15px; padding: 12px; background: rgba(106,255,212,0.05); border-left: 3px solid var(--accent3); border-radius: 4px; display: none; color: var(--accent3); font-size: 13px; }
+  .explanation.show { display: block; }
+
+  /* Utility */
+  .hidden { display: none !important; }
+  .btn { padding: 12px 24px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .json-textarea { width: 100%; height: 120px; background: #000; border: 1px solid var(--border); color: var(--accent3); padding: 10px; font-family: 'DM Mono'; border-radius: 8px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1 id="quiz-title">Chargement du Quiz...</h1>
-        </div>
+<div id="welcome-screen">
+  <div class="orb orb-1"></div>
+  <div class="welcome-title">QUIZ ENGINE IA</div>
+  <button class="btn btn-primary" style="padding: 20px 40px;" onclick="startApp()">COMMENCER</button>
+</div>
 
-        <div id="quiz-app">
-            <div id="question-area"></div>
-            <div style="text-align:center">
-                <button id="next-btn" class="btn hidden" onclick="nextQuestion()">Question Suivante</button>
-            </div>
-        </div>
+<div class="container">
+  <div class="header">
+    <div class="badge">⚡ v3.0 Powered</div>
+    <h1 id="main-title">Quiz Interactif</h1>
+  </div>
 
-        <div id="result-area" class="hidden" style="text-align:center">
-            <div class="q-card">
-                <h2 style="font-family:Syne">Terminé !</h2>
-                <p id="final-score" style="font-size:32px; color:var(--accent); margin:20px 0"></p>
-                <button class="btn" onclick="location.reload()">Recommencer</button>
-            </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('quiz')">QCM</button>
+    <button class="tab" onclick="switchTab('import')">Configuration</button>
+  </div>
+
+  <div id="tab-import" class="hidden">
+    <div class="choice-grid">
+      <div class="upload-zone" onclick="autoLoadFromGitHub()">
+        <span>☁️</span><br><strong>GitHub Auto</strong><br><small>Charger quiz.json</small>
+      </div>
+      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <span>📁</span><br><strong>Fichier local</strong><br><small>Importer .json</small>
+      </div>
+    </div>
+    <div class="json-input-zone">
+      <textarea class="json-textarea" id="jsonPaste" placeholder="Ou colle ton code JSON n8n ici..."></textarea>
+      <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="importJSON()">Valider le code</button>
+    </div>
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="loadFile(event)">
+  </div>
+
+  <div id="tab-quiz">
+    <div id="quiz-running" class="hidden">
+        <div id="questionsContainer"></div>
+        <div style="margin-top:20px; display:flex; justify-content: space-between; align-items: center;">
+            <div id="scoreDisplay" style="color:var(--accent)">Score: 0</div>
+            <button class="btn btn-primary" id="nextBtn" style="display:none" onclick="nextQuestion()">Suivant →</button>
         </div>
     </div>
+    
+    <div id="quiz-placeholder" style="text-align:center; padding:40px; border:1px dashed var(--border); border-radius:12px;">
+        <p style="color:var(--muted)">Aucun quiz chargé. Allez dans "Configuration".</p>
+    </div>
+  </div>
+</div>
 
-    <script>
-        let quizData = null;
-        let currentIdx = 0;
-        let score = 0;
-        let audioCtx = null;
+<script>
+let quizData = null;
+let currentQ = 0;
+let score = 0;
 
-        // --- SONS (Volume boosté à 0.8) ---
-        function playSfx(type) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const master = audioCtx.createGain();
-            master.gain.setValueAtTime(0.8, audioCtx.currentTime); // VOLUME AUGMENTÉ
-            master.connect(audioCtx.destination);
+// ── SYSTÈME SONORE (Web Audio API) ──
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(master);
+function playSfx(type) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-            if (type === 'correct') {
-                osc.frequency.setValueAtTime(520, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-            } 
-            else if (type === 'wrong') {
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-            } 
-            else if (type === 'end') {
-                const notes = [523, 659, 783, 1046];
-                notes.forEach((f, i) => {
-                    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                    o.connect(g); g.connect(master);
-                    o.frequency.setValueAtTime(f, audioCtx.currentTime + (i*0.1));
-                    g.gain.setValueAtTime(0.3, audioCtx.currentTime + (i*0.1));
-                    o.start(audioCtx.currentTime + (i*0.1)); o.stop(audioCtx.currentTime + (i*0.1) + 0.4);
-                });
-            }
-        }
+    if (type === 'correct') {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+    } else if (type === 'wrong') {
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+        osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    } else if (type === 'victory') {
+        [523, 659, 783].forEach((f, i) => { // Accord Majeur
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.setValueAtTime(f, audioCtx.currentTime + (i*0.1));
+            g.gain.setValueAtTime(0.2, audioCtx.currentTime + (i*0.1));
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i*0.1) + 0.4);
+            o.start(audioCtx.currentTime + (i*0.1)); o.stop(audioCtx.currentTime + (i*0.1) + 0.4);
+        });
+    }
+}
 
-        // --- LOGIQUE ---
-        const URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
+// ── LOGIQUE APP ──
+function startApp() {
+    document.getElementById('welcome-screen').classList.add('hidden');
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+}
 
-        async function loadQuiz() {
-            try {
-                const response = await fetch(URL + "?t=" + Date.now());
-                quizData = await response.json();
-                document.getElementById('quiz-title').innerText = quizData.titre;
-                renderQuestion();
-            } catch (e) {
-                document.getElementById('quiz-title').innerText = "Erreur de chargement";
-            }
-        }
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
+    document.getElementById('tab-import').classList.toggle('hidden', tab !== 'import');
+}
 
-        function renderQuestion() {
-            const q = quizData.questions[currentIdx];
-            const area = document.getElementById('question-area');
-            document.getElementById('next-btn').classList.add('hidden');
+async function autoLoadFromGitHub() {
+    const url = `https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json?t=${Date.now()}`;
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        setupQuiz(data);
+    } catch (e) { alert("Erreur GitHub"); }
+}
 
-            let html = `
-                <div class="q-card">
-                    <p style="color:var(--muted); font-size:12px; margin-bottom:10px">Question ${currentIdx + 1} / ${quizData.questions.length}</p>
-                    <h2 style="font-family:Syne; line-height:1.4">${q.question}</h2>
-                    <div class="choices">
-            `;
+function loadFile(e) {
+    const reader = new FileReader();
+    reader.onload = ev => setupQuiz(JSON.parse(ev.target.result));
+    reader.readAsText(e.target.files[0]);
+}
 
-            q.choix.forEach(choix => {
-                html += `<button class="choice" onclick="checkAnswer(this, '${choix.replace(/'/g, "\\'")}')">${choix}</button>`;
-            });
+function importJSON() {
+    try {
+        const data = JSON.parse(document.getElementById('jsonPaste').value);
+        setupQuiz(data);
+    } catch (e) { alert("JSON Invalide"); }
+}
 
-            html += `</div><div id="explanation" class="expl hidden">${q.explication}</div></div>`;
-            area.innerHTML = html;
-        }
+function setupQuiz(data) {
+    quizData = data;
+    currentQ = 0; score = 0;
+    document.getElementById('main-title').textContent = data.titre || "Quiz Chargé";
+    document.getElementById('quiz-placeholder').classList.add('hidden');
+    document.getElementById('quiz-running').classList.remove('hidden');
+    switchTab('quiz');
+    renderQuestion();
+}
 
-        function checkAnswer(btn, selectedText) {
-            const q = quizData.questions[currentIdx];
-            const correctText = q.reponse;
-            const allBtns = document.querySelectorAll('.choice');
-            
-            // On désactive tout
-            allBtns.forEach(b => b.disabled = true);
+function renderQuestion() {
+    const q = quizData.questions[currentQ];
+    const container = document.getElementById('questionsContainer');
+    document.getElementById('nextBtn').style.display = 'none';
+    
+    container.innerHTML = `
+        <div class="question-card">
+            <div class="q-text">${q.question}</div>
+            <div class="choices" id="choiceList"></div>
+            <div class="explanation" id="expl">${q.explication || ''}</div>
+        </div>
+    `;
 
-            // Comparaison simple et directe
-            if (selectedText === correctText) {
-                btn.classList.add('correct');
-                score++;
-                playSfx('correct');
-            } else {
-                btn.classList.add('wrong');
-                playSfx('wrong');
-                // On montre quand même la bonne réponse
-                allBtns.forEach(b => {
-                    if (b.innerText === correctText) b.classList.add('correct');
-                });
-            }
+    q.choix.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = c;
+        btn.onclick = () => checkAnswer(btn, c, q.reponse);
+        document.getElementById('choiceList').appendChild(btn);
+    });
+}
 
-            document.getElementById('explanation').classList.remove('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
-        }
+function checkAnswer(btn, selected, correct) {
+    const isCorrect = selected.trim() === correct.trim();
+    const allBtns = document.querySelectorAll('.choice');
+    
+    allBtns.forEach(b => {
+        b.classList.add('disabled');
+        if(b.textContent.trim() === correct.trim()) b.classList.add('correct');
+    });
 
-        function nextQuestion() {
-            currentIdx++;
-            if (currentIdx < quizData.questions.length) {
-                renderQuestion();
-            } else {
-                showResults();
-            }
-        }
+    if(isCorrect) {
+        score++;
+        playSfx('correct');
+    } else {
+        btn.classList.add('wrong');
+        playSfx('wrong');
+    }
 
-        function showResults() {
-            document.getElementById('quiz-app').classList.add('hidden');
-            document.getElementById('result-area').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `Score : ${score} / ${quizData.questions.length}`;
-            playSfx('end');
-        }
+    document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+    document.getElementById('expl').classList.add('show');
+    document.getElementById('nextBtn').style.display = 'block';
+}
 
-        loadQuiz();
-    </script>
+function nextQuestion() {
+    currentQ++;
+    if(currentQ < quizData.questions.length) {
+        renderQuestion();
+    } else {
+        playSfx('victory');
+        document.getElementById('questionsContainer').innerHTML = `
+            <div class="question-card" style="text-align:center">
+                <h2>Quiz Terminé !</h2>
+                <div style="font-size:48px; margin:20px 0">${Math.round((score/quizData.questions.length)*100)}%</div>
+                <p>Tu as obtenu ${score} sur ${quizData.questions.length}</p>
+                <button class="btn btn-primary" style="margin-top:20px" onclick="location.reload()">Recommencer</button>
+            </div>
+        `;
+        document.getElementById('nextBtn').style.display = 'none';
+    }
+}
+</script>
 </body>
 </html>
