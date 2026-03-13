@@ -3,108 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine - Version Stable</title>
+    <title>Quiz Engine - Audio & Interface</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050508; --surface: #0f0f17; --surface-light: #161621;
-            --accent: #7c6aff; --text: #e8e8f0; --muted: #6b6b80;
-            --correct: #2dff9e; --wrong: #ff4d6d; --border: rgba(124, 106, 255, 0.15);
+            --accent: #7c6aff; --accent-glow: rgba(124, 106, 255, 0.3);
+            --accent2: #ff6a9e; --accent3: #6affd4; --text: #e8e8f0;
+            --muted: #6b6b80; --correct: #2dff9e; --wrong: #ff4d6d;
+            --border: rgba(124, 106, 255, 0.15);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+
+        .bg-glow {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(124,106,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(255,106,158,0.03) 0%, transparent 50%);
+        }
+
         .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
-        #welcome-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #welcome-screen.hide { display: none; }
+
+        /* --- Welcome --- */
+        #welcome-screen {
+            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease;
+        }
+        #welcome-screen.hide { opacity: 0; pointer-events: none; }
+        .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* --- Header & Tabs --- */
         .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-top: 10px; }
+        .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; }
+
         .tabs { display: flex; gap: 8px; background: var(--surface); padding: 6px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
-        .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: 'Syne'; font-weight: 600; transition: 0.3s; }
-        .tab.active { background: var(--accent); color: white; border-radius: 8px; }
-        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; animation: slideUp 0.4s ease; }
+        .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+        .tab.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+
+        /* --- Cards --- */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
+        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; text-align: left; animation: slideUp 0.4s ease; }
+        
         .choices { display: grid; gap: 10px; margin-top: 20px; }
-        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; color: var(--text); font-family: inherit; text-align: left; width: 100%; transition: 0.2s; }
-        .choice.correct { border-color: var(--correct) !important; background: rgba(45, 255, 158, 0.1) !important; color: var(--correct) !important; }
-        .choice.wrong { border-color: var(--wrong) !important; background: rgba(255, 77, 109, 0.1) !important; color: var(--wrong) !important; }
-        .btn { padding: 12px 28px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; background: var(--accent); color: white; font-family: 'Syne'; }
+        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left; }
+        .choice:hover:not(.disabled) { border-color: var(--accent); background: rgba(124, 106, 255, 0.08); }
+        .choice.correct { border-color: var(--correct); background: rgba(45, 255, 158, 0.08); color: var(--correct); }
+        .choice.wrong { border-color: var(--wrong); background: rgba(255, 77, 109, 0.08); color: var(--wrong); }
+
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+
         .hidden { display: none !important; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
+
+    <div class="bg-glow"></div>
+
     <div id="welcome-screen">
-        <h1 style="font-family:Syne; margin-bottom:20px">Quiz Engine</h1>
-        <button class="btn" onclick="initApp()">Commencer →</button>
+        <h1 class="welcome-title">Quiz Engine</h1>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Expérience Audio & Apprentissage</p>
+        <button class="btn btn-primary" onclick="initApp()">Lancer l'application →</button>
     </div>
 
     <div class="container">
         <div class="header">
-            <h1 id="main-title" style="font-family:Syne;">Chargement...</h1>
+            <span class="badge" id="sync-status">Connecté</span>
+            <h1 id="main-title">Préparation...</h1>
         </div>
+
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('quiz')">Entraînement</button>
+            <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
             <button class="tab" onclick="switchTab('exos')">Exercices</button>
+            <button class="tab" onclick="switchTab('import')">🔧 Config</button>
         </div>
 
         <div id="view-quiz">
-            <div id="quiz-lobby" class="hidden" style="text-align:center">
-                <div class="q-card">
-                    <p id="lobby-details" style="margin-bottom:20px; color:var(--muted)"></p>
-                    <button class="btn" onclick="startQuiz()">Lancer le Quiz</button>
+            <div id="quiz-lobby" class="hidden">
+                <div class="card">
+                    <span style="font-size:35px; display:block; margin-bottom:15px;">🚀</span>
+                    <h2 id="lobby-name" style="margin-bottom:8px;">Quiz Prêt</h2>
+                    <p id="lobby-details" style="color:var(--muted); font-size:13px; margin-bottom:30px;"></p>
+                    <button class="btn btn-primary" onclick="startQuiz()">Démarrer le quiz</button>
                 </div>
             </div>
+
             <div id="quiz-running" class="hidden">
                 <div id="question-container"></div>
-                <div style="text-align:center; margin-top:20px;">
-                    <button id="btn-next" class="btn hidden" onclick="nextQuestion()">Question suivante →</button>
+                <div style="text-align:center; margin-top:25px;">
+                    <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">Suivant →</button>
                 </div>
             </div>
-            <div id="quiz-results" class="hidden" style="text-align:center">
-                <div class="q-card">
-                    <h2 id="score-pct" style="font-size:48px; color:var(--accent); margin-bottom:10px">0%</h2>
-                    <button class="btn" onclick="showLobby()">Recommencer</button>
+
+            <div id="quiz-results" class="hidden">
+                <div class="card">
+                    <div style="font-size:48px; font-weight:800; color:var(--accent); margin-bottom:10px" id="score-pct">0%</div>
+                    <p style="margin-bottom:25px;">Session terminée !</p>
+                    <button class="btn btn-primary" onclick="showLobby()">↺ Recommencer</button>
                 </div>
             </div>
         </div>
-        <div id="view-exos" class="hidden"><div id="exos-list"></div></div>
+
+        <div id="view-exos" class="hidden">
+            <div id="exos-list"></div>
+        </div>
+
+        <div id="view-import" class="hidden">
+            <div class="q-card">
+                <p style="font-size:11px; color:var(--accent); margin-bottom:15px;">GESTION DES DONNÉES</p>
+                <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">Actualiser via GitHub</button>
+                <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Vider le cache local</button>
+            </div>
+        </div>
     </div>
 
     <script>
         let state = { data: null, currentIdx: 0, score: 0, audioCtx: null };
 
-        // SON BOOSTÉ
+        // --- Moteur Audio ---
         function playSfx(type) {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = state.audioCtx;
-            const master = ctx.createGain(); master.gain.setValueAtTime(0.6, ctx.currentTime); master.connect(ctx.destination);
-            const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(master);
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.6, ctx.currentTime); // Volume Boosté
+            master.connect(ctx.destination);
+
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g); g.connect(master);
+
             if (type === 'correct') {
-                o.frequency.setValueAtTime(523, ctx.currentTime); o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-                g.gain.setValueAtTime(0.4, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
+                o.type = 'sine';
+                o.frequency.setValueAtTime(523, ctx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.4, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                o.start(); o.stop(ctx.currentTime + 0.3);
             } else if (type === 'wrong') {
-                o.frequency.setValueAtTime(220, ctx.currentTime); o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
-                g.gain.setValueAtTime(0.4, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(220, ctx.currentTime);
+                o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
+                g.gain.setValueAtTime(0.3, ctx.currentTime);
+                g.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                o.start(); o.stop(ctx.currentTime + 0.3);
+            } else if (type === 'victory') {
+                [523, 659, 783, 1046].forEach((f, i) => {
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(master);
+                    osc.frequency.setValueAtTime(f, ctx.currentTime + (i*0.1));
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + (i*0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i*0.1) + 0.5);
+                    osc.start(ctx.currentTime + (i*0.1)); osc.stop(ctx.currentTime + (i*0.1) + 0.5);
+                });
             }
         }
 
-        // NETTOYAGE RADICAL POUR COMPARAISON
-        function simplify(str) {
-            return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '').trim();
-        }
-
+        // --- Logique App ---
         const RAW_URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
 
-        async function initApp() {
+        function initApp() {
             document.getElementById('welcome-screen').classList.add('hide');
-            try {
-                const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
-                state.data = await res.json();
+            const cache = localStorage.getItem('quiz_cache');
+            if (cache) {
+                state.data = JSON.parse(cache);
                 showLobby();
-            } catch (e) { console.error(e); }
+            } else {
+                fetchGitHubData();
+            }
+        }
+
+        async function fetchGitHubData() {
+            const status = document.getElementById('sync-status');
+            status.textContent = "MÀJ...";
+            try {
+                // Utilisation du lien RAW avec cache-busting timestamp
+                const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    state.data = await res.json();
+                    localStorage.setItem('quiz_cache', JSON.stringify(state.data));
+                    status.textContent = "À JOUR";
+                    showLobby();
+                }
+            } catch (e) { 
+                status.textContent = "ERREUR";
+                console.error(e);
+            }
         }
 
         function showLobby() {
-            document.getElementById('main-title').textContent = state.data.titre;
-            document.getElementById('lobby-details').textContent = state.data.questions.length + " questions disponibles";
+            if (!state.data) return;
+            document.getElementById('main-title').textContent = state.data.titre || "Quiz Engine";
+            document.getElementById('lobby-name').textContent = state.data.titre || "Prêt";
+            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions chargées`;
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
@@ -122,40 +219,32 @@
             const q = state.data.questions[state.currentIdx];
             const container = document.getElementById('question-container');
             document.getElementById('btn-next').classList.add('hidden');
-            
             container.innerHTML = `
                 <div class="q-card">
-                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
-                    <h2 style="margin-bottom:20px; font-family:Syne; line-height:1.4">${q.question}</h2>
+                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px;">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
+                    <h2 style="font-family:'Syne'; font-size:18px;">${q.question}</h2>
                     <div class="choices" id="choices"></div>
-                    <div id="expl" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.05); color:#6affd4; border-left:3px solid #6affd4; font-size:13px; line-height:1.6">
+                    <div id="expl" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.05); border-radius:8px; font-size:13px; color:var(--accent3); border-left:2px solid var(--accent3);">
                         ${q.explication || ''}
                     </div>
                 </div>`;
 
-            q.choix.forEach((txt) => {
-                const btn = document.createElement('button');
-                btn.className = 'choice';
-                btn.innerHTML = txt;
-                
-                btn.onclick = () => {
-                    const cleanUser = simplify(txt);
-                    const cleanCorrect = simplify(q.reponse);
-                    const isCorrect = (cleanUser === cleanCorrect);
-                    
-                    if(isCorrect) { state.score++; playSfx('correct'); } 
-                    else { playSfx('wrong'); }
-
-                    document.querySelectorAll('.choice').forEach((b) => {
-                        b.style.pointerEvents = 'none';
-                        if(simplify(b.innerText) === cleanCorrect) b.classList.add('correct');
+            q.choix.forEach((c, i) => {
+                const b = document.createElement('button');
+                b.className = 'choice';
+                b.innerHTML = `<span style="color:var(--accent); font-weight:800; margin-right:12px">${String.fromCharCode(65+i)}</span> ${c}`;
+                b.onclick = () => {
+                    const win = (c === q.reponse);
+                    if(win) { state.score++; playSfx('correct'); } else { playSfx('wrong'); }
+                    document.querySelectorAll('.choice').forEach(btn => {
+                        btn.classList.add('disabled'); btn.onclick = null;
+                        if(btn.innerText.includes(q.reponse)) btn.classList.add('correct');
                     });
-
-                    if(!isCorrect) btn.classList.add('wrong');
+                    if(!win) b.classList.add('wrong');
                     document.getElementById('expl').classList.remove('hidden');
                     document.getElementById('btn-next').classList.remove('hidden');
                 };
-                document.getElementById('choices').appendChild(btn);
+                document.getElementById('choices').appendChild(b);
             });
         }
 
@@ -163,7 +252,7 @@
             state.currentIdx++;
             if (state.currentIdx < state.data.questions.length) renderQuestion();
             else {
-                playSfx('correct');
+                playSfx('victory');
                 document.getElementById('quiz-running').classList.add('hidden');
                 document.getElementById('quiz-results').classList.remove('hidden');
                 document.getElementById('score-pct').textContent = Math.round((state.score/state.data.questions.length)*100) + "%";
@@ -171,9 +260,10 @@
         }
 
         function switchTab(t) {
+            document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['quiz','exos','config'][i] === t));
             document.getElementById('view-quiz').classList.toggle('hidden', t !== 'quiz');
             document.getElementById('view-exos').classList.toggle('hidden', t !== 'exos');
-            document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', (i===0 && t==='quiz') || (i===1 && t==='exos')));
+            document.getElementById('view-import').classList.toggle('hidden', t !== 'import');
         }
 
         function renderExos() {
@@ -182,9 +272,9 @@
             list.innerHTML = state.data.exercices.map((ex, i) => `
                 <div class="q-card" style="margin-bottom:15px">
                     <p style="font-size:11px; color:var(--accent)">EXERCICE ${i+1}</p>
-                    <p style="margin:10px 0; font-size:14px">${ex.enonce}</p>
-                    <details><summary style="cursor:pointer; color:#6affd4; font-size:12px">SOLUTION</summary>
-                    <div style="margin-top:10px; font-size:13px; color:var(--muted); border-top:1px solid var(--border); padding-top:10px">${ex.corrige}</div></details>
+                    <p style="font-size:14px; margin:10px 0;">${ex.enonce}</p>
+                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px;">SOLUTION</summary>
+                    <div style="margin-top:10px; font-size:13px; color:var(--muted)">${ex.corrige}</div></details>
                 </div>`).join('');
         }
     </script>
