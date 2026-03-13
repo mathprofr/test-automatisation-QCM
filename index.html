@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine - Correctif Final</title>
+    <title>Quiz Engine - Version Stable</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,44 +17,52 @@
         #welcome-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #welcome-screen.hide { display: none; }
         .header { text-align: center; margin-bottom: 35px; }
-        .tabs { display: flex; gap: 8px; background: var(--surface); padding: 6px; border-radius: 12px; margin-bottom: 30px; }
-        .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); cursor: pointer; font-weight: 600; }
+        .tabs { display: flex; gap: 8px; background: var(--surface); padding: 6px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
+        .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: 'Syne'; font-weight: 600; transition: 0.3s; }
         .tab.active { background: var(--accent); color: white; border-radius: 8px; }
-        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; }
+        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; animation: slideUp 0.4s ease; }
         .choices { display: grid; gap: 10px; margin-top: 20px; }
-        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; color: var(--text); font-family: inherit; text-align: left; width: 100%; }
+        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; color: var(--text); font-family: inherit; text-align: left; width: 100%; transition: 0.2s; }
         .choice.correct { border-color: var(--correct) !important; background: rgba(45, 255, 158, 0.1) !important; color: var(--correct) !important; }
         .choice.wrong { border-color: var(--wrong) !important; background: rgba(255, 77, 109, 0.1) !important; color: var(--wrong) !important; }
-        .btn { padding: 12px 28px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; background: var(--accent); color: white; margin-top: 20px; }
+        .btn { padding: 12px 28px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; background: var(--accent); color: white; font-family: 'Syne'; }
         .hidden { display: none !important; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div id="welcome-screen">
-        <h1 style="font-family:Syne; margin-bottom:20px">Quiz Engine Fix</h1>
-        <button class="btn" onclick="initApp()">Démarrer →</button>
+        <h1 style="font-family:Syne; margin-bottom:20px">Quiz Engine</h1>
+        <button class="btn" onclick="initApp()">Commencer →</button>
     </div>
 
     <div class="container">
         <div class="header">
-            <h1 id="main-title">Chargement...</h1>
+            <h1 id="main-title" style="font-family:Syne;">Chargement...</h1>
         </div>
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
+            <button class="tab active" onclick="switchTab('quiz')">Entraînement</button>
             <button class="tab" onclick="switchTab('exos')">Exercices</button>
         </div>
 
         <div id="view-quiz">
             <div id="quiz-lobby" class="hidden" style="text-align:center">
-                <button class="btn" onclick="startQuiz()">Lancer la série</button>
+                <div class="q-card">
+                    <p id="lobby-details" style="margin-bottom:20px; color:var(--muted)"></p>
+                    <button class="btn" onclick="startQuiz()">Lancer le Quiz</button>
+                </div>
             </div>
             <div id="quiz-running" class="hidden">
                 <div id="question-container"></div>
-                <div style="text-align:center"><button id="btn-next" class="btn hidden" onclick="nextQuestion()">Suivant →</button></div>
+                <div style="text-align:center; margin-top:20px;">
+                    <button id="btn-next" class="btn hidden" onclick="nextQuestion()">Question suivante →</button>
+                </div>
             </div>
             <div id="quiz-results" class="hidden" style="text-align:center">
-                <h2 id="score-pct" style="font-size:40px; color:var(--accent)">0%</h2>
-                <button class="btn" onclick="showLobby()">Recommencer</button>
+                <div class="q-card">
+                    <h2 id="score-pct" style="font-size:48px; color:var(--accent); margin-bottom:10px">0%</h2>
+                    <button class="btn" onclick="showLobby()">Recommencer</button>
+                </div>
             </div>
         </div>
         <div id="view-exos" class="hidden"><div id="exos-list"></div></div>
@@ -63,18 +71,24 @@
     <script>
         let state = { data: null, currentIdx: 0, score: 0, audioCtx: null };
 
+        // SON BOOSTÉ
         function playSfx(type) {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = state.audioCtx;
-            const master = ctx.createGain(); master.gain.setValueAtTime(0.5, ctx.currentTime); master.connect(ctx.destination);
+            const master = ctx.createGain(); master.gain.setValueAtTime(0.6, ctx.currentTime); master.connect(ctx.destination);
             const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(master);
             if (type === 'correct') {
                 o.frequency.setValueAtTime(523, ctx.currentTime); o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-                g.gain.setValueAtTime(0.3, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
+                g.gain.setValueAtTime(0.4, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
             } else if (type === 'wrong') {
                 o.frequency.setValueAtTime(220, ctx.currentTime); o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
-                g.gain.setValueAtTime(0.3, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
+                g.gain.setValueAtTime(0.4, ctx.currentTime); o.start(); o.stop(ctx.currentTime + 0.3);
             }
+        }
+
+        // NETTOYAGE RADICAL POUR COMPARAISON
+        function simplify(str) {
+            return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '').trim();
         }
 
         const RAW_URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
@@ -85,14 +99,16 @@
                 const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
                 state.data = await res.json();
                 showLobby();
-            } catch (e) { alert("Erreur de chargement GitHub"); }
+            } catch (e) { console.error(e); }
         }
 
         function showLobby() {
             document.getElementById('main-title').textContent = state.data.titre;
+            document.getElementById('lobby-details').textContent = state.data.questions.length + " questions disponibles";
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
+            renderExos();
         }
 
         function startQuiz() {
@@ -109,30 +125,30 @@
             
             container.innerHTML = `
                 <div class="q-card">
-                    <p style="font-size:11px; color:var(--accent)">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
-                    <h2 style="margin:15px 0">${q.question}</h2>
+                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
+                    <h2 style="margin-bottom:20px; font-family:Syne; line-height:1.4">${q.question}</h2>
                     <div class="choices" id="choices"></div>
-                    <div id="expl" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.05); color:#6affd4; border-left:3px solid #6affd4; font-size:13px">
+                    <div id="expl" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.05); color:#6affd4; border-left:3px solid #6affd4; font-size:13px; line-height:1.6">
                         ${q.explication || ''}
                     </div>
                 </div>`;
 
-            q.choix.forEach((text, index) => {
+            q.choix.forEach((txt) => {
                 const btn = document.createElement('button');
                 btn.className = 'choice';
-                btn.innerHTML = `<span style="font-weight:800; margin-right:12px; color:var(--accent)">${String.fromCharCode(65+index)}</span> ${text}`;
+                btn.innerHTML = txt;
                 
                 btn.onclick = () => {
-                    // COMPARAISON ROBUSTE : on nettoie les espaces et on compare le texte pur
-                    const isCorrect = (text.trim() === q.reponse.trim());
+                    const cleanUser = simplify(txt);
+                    const cleanCorrect = simplify(q.reponse);
+                    const isCorrect = (cleanUser === cleanCorrect);
                     
                     if(isCorrect) { state.score++; playSfx('correct'); } 
                     else { playSfx('wrong'); }
 
-                    document.querySelectorAll('.choice').forEach((b, i) => {
+                    document.querySelectorAll('.choice').forEach((b) => {
                         b.style.pointerEvents = 'none';
-                        // On marque en vert la réponse qui correspond exactement au champ "reponse" du JSON
-                        if(q.choix[i].trim() === q.reponse.trim()) b.classList.add('correct');
+                        if(simplify(b.innerText) === cleanCorrect) b.classList.add('correct');
                     });
 
                     if(!isCorrect) btn.classList.add('wrong');
@@ -147,6 +163,7 @@
             state.currentIdx++;
             if (state.currentIdx < state.data.questions.length) renderQuestion();
             else {
+                playSfx('correct');
                 document.getElementById('quiz-running').classList.add('hidden');
                 document.getElementById('quiz-results').classList.remove('hidden');
                 document.getElementById('score-pct').textContent = Math.round((state.score/state.data.questions.length)*100) + "%";
@@ -157,6 +174,18 @@
             document.getElementById('view-quiz').classList.toggle('hidden', t !== 'quiz');
             document.getElementById('view-exos').classList.toggle('hidden', t !== 'exos');
             document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', (i===0 && t==='quiz') || (i===1 && t==='exos')));
+        }
+
+        function renderExos() {
+            const list = document.getElementById('exos-list');
+            if(!state.data.exercices) return;
+            list.innerHTML = state.data.exercices.map((ex, i) => `
+                <div class="q-card" style="margin-bottom:15px">
+                    <p style="font-size:11px; color:var(--accent)">EXERCICE ${i+1}</p>
+                    <p style="margin:10px 0; font-size:14px">${ex.enonce}</p>
+                    <details><summary style="cursor:pointer; color:#6affd4; font-size:12px">SOLUTION</summary>
+                    <div style="margin-top:10px; font-size:13px; color:var(--muted); border-top:1px solid var(--border); padding-top:10px">${ex.corrige}</div></details>
+                </div>`).join('');
         }
     </script>
 </body>
