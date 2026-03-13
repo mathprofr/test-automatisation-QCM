@@ -11,7 +11,7 @@
         "Onde qui transporte de la matière",
         "Onde qui ne transporte pas d'énergie"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "Une onde progressive est une onde qui se propage de proche en proche dans un milieu, transportant de l'énergie sans déplacer de matière"
     },
     {
@@ -23,7 +23,7 @@
         "Déplacement de matière dans un milieu",
         "Déplacement d'énergie dans un milieu"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "Une onde mécanique est une perturbation s'accompagnant d'une déformation de la matière"
     },
     {
@@ -35,7 +35,7 @@
         "La déformation du milieu est circulaire",
         "La déformation du milieu est elliptique"
       ],
-      "reponse": "B",
+      "reponse": "B.",
       "explication": "Une onde longitudinale est une onde où la déformation du milieu est parallèle au déplacement de l'onde"
     },
     {
@@ -47,7 +47,7 @@
         "La déformation du milieu est circulaire",
         "La déformation du milieu est elliptique"
       ],
-      "reponse": "B",
+      "reponse": "B.",
       "explication": "Une onde transversale est une onde où la déformation du milieu est perpendiculaire au déplacement de l'onde"
     },
     {
@@ -59,7 +59,7 @@
         "Onde transportant de la matière",
         "Onde ne transportant pas d'énergie"
       ],
-      "reponse": "B",
+      "reponse": "B.",
       "explication": "Une onde non mécanique est une onde ne déformant pas la matière"
     },
     {
@@ -71,7 +71,7 @@
         "Une onde ne se propage pas",
         "Une onde se propage de manière aléatoire"
       ],
-      "reponse": "B",
+      "reponse": "B.",
       "explication": "Une propagation est le fait qu'une onde se propage dans toutes les directions possibles"
     },
     {
@@ -83,7 +83,7 @@
         "Phénomène aléatoire",
         "Phénomène constant"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "Un phénomène périodique est un phénomène qui se répète à l'identique"
     },
     {
@@ -95,7 +95,7 @@
         "Temps de propagation d'une onde",
         "Distance de propagation d'une onde"
       ],
-      "reponse": "B",
+      "reponse": "B.",
       "explication": "La période (T) est l'écart le plus petit entre deux points à position verticale identique"
     },
     {
@@ -107,7 +107,7 @@
         "Périodicité aléatoire",
         "Périodicité constante"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La double périodicité est la périodicité spatiale (λ) et temporelle (T)"
     },
     {
@@ -119,7 +119,7 @@
         "Énergie transportée par l'onde",
         "Fréquence de l'onde"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La vitesse d'une onde est la distance parcourue par l'onde par unité de temps"
     },
     {
@@ -131,7 +131,7 @@
         "Temps mis par l'onde pour parcourir une distance",
         "Énergie transportée par l'onde"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La fréquence d'une onde est le nombre d'oscillations par unité de temps"
     },
     {
@@ -143,7 +143,7 @@
         "Temps de propagation d'une onde",
         "Énergie transportée par l'onde"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La longueur d'onde d'une onde est la distance entre deux points à position verticale identique"
     },
     {
@@ -155,7 +155,7 @@
         "Temps de propagation d'une onde",
         "Énergie transportée par l'onde"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "L'amplitude d'une onde est la distance entre le point le plus haut et le point le plus bas de l'onde"
     },
     {
@@ -167,7 +167,7 @@
         "Fréquence de l'onde",
         "Longueur d'onde de l'onde"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La phase d'une onde est la position de l'onde à un instant donné"
     },
     {
@@ -179,7 +179,7 @@
         "Ligne qui relie les points de même vitesse",
         "Ligne qui relie les points de même fréquence"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "Un front d'onde est la ligne qui relie les points de même phase"
     },
     {
@@ -191,7 +191,7 @@
         "Phénomène par lequel une onde est transmise à travers une surface",
         "Phénomène par lequel une onde est déviée par une surface"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La réflexion d'une onde est le phénomène par lequel une onde est renvoyée par une surface"
     },
     {
@@ -203,7 +203,7 @@
         "Phénomène par lequel une onde est absorbée par une surface",
         "Phénomène par lequel une onde est transmise à travers une surface"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La réfraction d'une onde est le phénomène par lequel une onde est déviée en passant d'un milieu à un autre"
     },
     {
@@ -215,7 +215,7 @@
         "Phénomène par lequel une onde est absorbée par une surface",
         "Phénomène par lequel une onde est transmise à travers une surface"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La diffraction d'une onde est le phénomène par lequel une onde est déviée en passant par un obstacle"
     },
     {
@@ -227,7 +227,7 @@
         "Phénomène par lequel deux ondes se renforcent",
         "Phénomène par lequel deux ondes se dévient"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "L'interférence d'une ode est le phénomène par lequel deux ondes se superposent"
     },
     {
@@ -239,7 +239,7 @@
         "Phénomène par lequel une onde est renvoyée par une surface",
         "Phénomène par lequel une onde est transmise à travers une surface"
       ],
-      "reponse": "A",
+      "reponse": "A.",
       "explication": "La polarisation d'une onde est le phénomène par lequel une onde est orientée dans une direction particulière"
     }
   ],
