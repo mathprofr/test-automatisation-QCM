@@ -552,10 +552,10 @@
     background-size: 60px 60px;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
   }
-  .welcome-content { position: relative; z-index: 2; text-align: center; padding: 40px 20px; max-width: 800px; }
+  .welcome-content { position: relative; z-index: 2; text-align: center; padding: 30px 15px; max-width: 800px; }
   .welcome-eyebrow {
     font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.4em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 40px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 30px;
     opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
     display: flex; align-items: center; justify-content: center; gap: 12px;
   }
@@ -563,9 +563,9 @@
   .welcome-eyebrow::after { background: linear-gradient(90deg, var(--accent), transparent); }
   .welcome-title {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(72px, 14vw, 160px);
+    font-size: clamp(60px, 8vw, 100px);
     font-weight: 800; line-height: 0.88; letter-spacing: -0.04em;
-    margin-bottom: 40px; opacity: 0; animation: fadeUp 0.8s ease 0.45s forwards;
+    margin-bottom: 30px; opacity: 0; animation: fadeUp 0.8s ease 0.45s forwards;
   }
   .welcome-title span {
     display: block;
@@ -576,12 +576,12 @@
   @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
   .welcome-sub {
     font-family: 'DM Mono', monospace; font-size: 15px; color: var(--muted);
-    margin-bottom: 56px; opacity: 0; animation: fadeUp 0.7s ease 0.65s forwards;
+    margin-bottom: 40px; opacity: 0; animation: fadeUp 0.7s ease 0.65s forwards;
     line-height: 1.7; max-width: 420px; margin-left: auto; margin-right: auto;
   }
   .welcome-btn {
     display: inline-flex; align-items: center; gap: 14px;
-    padding: 20px 56px;
+    padding: 16px 48px;
     background: linear-gradient(135deg, var(--accent) 0%, #9d8bff 50%, var(--accent2) 100%);
     background-size: 200% 200%; border: none; border-radius: 6px; color: white;
     font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
@@ -638,10 +638,6 @@
         <p>Colle ici le <strong>JSON généré par n8n</strong><br>ou clique pour charger un fichier</p>
       </div>
       <input type="file" id="fileInput" accept=".json" onchange="loadFile(event)">
-
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="loadDemo()">▶ Charger démo</button>
-      </div>
     </div>
 
     <div id="quiz-running" class="hidden">
@@ -689,10 +685,7 @@
     <div id="exosContainer">
       <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
         <span class="upload-icon">✏️</span>
-        <p>Charge un <strong>fichier JSON n8n</strong><br>ou clique sur "Charger démo"</p>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="loadDemo()">▶ Charger démo</button>
+        <p>Charge un <strong>fichier JSON n8n</strong><br>ou clique pour charger un fichier</p>
       </div>
     </div>
   </div>
@@ -700,11 +693,7 @@
   <div id="tab-import" class="hidden">
     <div class="json-input-zone">
       <label>Colle ton JSON n8n ici</label>
-      <textarea class="json-textarea" id="jsonPaste" placeholder='{
-  "titre": "Mon cours",
-  "questions": [...],
-  "exercices": [...]
-}'></textarea>
+      <textarea class="json-textarea" id="jsonPaste"></textarea>
     </div>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="importJSON()">✓ Charger le quiz</button>
@@ -741,58 +730,6 @@ let score = 0;
 let answered = [];
 let mode = 'quiz';
 
-// ── Demo data ──────────────────────────────────────────
-const DEMO = {
-  titre: "Les Ondes — Physique Terminale",
-  questions: [
-    {
-      question: "Quelle est la relation entre la fréquence f et la période T d'une onde ?",
-      type: "qcm",
-      choix: ["f = T", "f = 1/T", "f = T²", "f = 2T"],
-      reponse: "f = 1/T",
-      explication: "La fréquence est l'inverse de la période : f = 1/T. Si T = 0,01 s, alors f = 100 Hz."
-    },
-    {
-      question: "Quelle est l'unité de la fréquence dans le système international ?",
-      type: "qcm",
-      choix: ["Mètre (m)", "Seconde (s)", "Hertz (Hz)", "Newton (N)"],
-      reponse: "Hertz (Hz)",
-      explication: "La fréquence se mesure en Hertz (Hz), équivalent à des oscillations par seconde."
-    },
-    {
-      question: "La célérité d'une onde dans un milieu dépend de :",
-      type: "qcm",
-      choix: ["La fréquence uniquement", "L'amplitude uniquement", "La nature du milieu", "La durée d'émission"],
-      reponse: "La nature du milieu",
-      explication: "La célérité dépend des propriétés du milieu (élasticité, densité), pas de la fréquence ni de l'amplitude."
-    },
-    {
-      question: "Un son de fréquence 440 Hz a une période de :",
-      type: "qcm",
-      choix: ["0,00227 s", "440 s", "0,044 s", "4,4 × 10⁻¹ s"],
-      reponse: "0,00227 s",
-      explication: "T = 1/f = 1/440 ≈ 0,00227 s. Le la3 vibre 440 fois par seconde."
-    },
-    {
-      question: "Le phénomène de diffraction est plus marqué quand :",
-      type: "qcm",
-      choix: ["λ >> taille obstacle", "λ << taille obstacle", "λ = 0", "L'onde est transversale"],
-      reponse: "λ >> taille obstacle",
-      explication: "La diffraction est maximale quand la longueur d'onde est grande devant l'obstacle ou l'ouverture."
-    }
-  ],
-  exercices: [
-    {
-      enonce: "Un émetteur émet une onde sonore de fréquence f = 680 Hz. La célérité du son dans l'air est v = 340 m/s.\n\n1. Calculer la période T de cette onde.\n2. Calculer la longueur d'onde λ.\n3. Après avoir traversé une ouverture de 0,5 m, observe-t-on un phénomène de diffraction notable ?",
-      corrige: "1. T = 1/f = 1/680 ≈ 1,47 × 10⁻³ s\n\n2. λ = v/f = 340/680 = 0,5 m\n\n3. λ = 0,5 m = taille de l'ouverture → diffraction notable car λ est du même ordre de grandeur que l'ouverture. Si λ >> ouverture, la diffraction serait maximale."
-    },
-    {
-      enonce: "On observe à la surface de l'eau deux ondes circulaires créées par deux sources S₁ et S₂ vibrant en phase à f = 10 Hz. La célérité des ondes est v = 0,20 m/s.\n\n1. Calculer λ.\n2. En un point M, on mesure |S₁M − S₂M| = 0,03 m. Ce point est-il en interférence constructive ou destructive ?",
-      corrige: "1. λ = v/f = 0,20/10 = 0,02 m = 2 cm\n\n2. Δ = |S₁M − S₂M| = 0,03 m\nΔ/λ = 0,03/0,02 = 1,5 = 3/2\n\nComme Δ = (2k+1)λ/2 avec k=1, le point M est en interférence DESTRUCTIVE (ventre de repos)."
-    }
-  ]
-};
-
 // ── Update App Title ───────────────────────────────────
 function updateAppTitle() {
   const mainTitle = document.getElementById('main-title');
@@ -812,14 +749,6 @@ function switchTab(tab) {
   document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
   document.getElementById('tab-exos').classList.toggle('hidden', tab !== 'exos');
   document.getElementById('tab-import').classList.toggle('hidden', tab !== 'import');
-}
-
-// ── Load demo ──────────────────────────────────────────
-function loadDemo() {
-  quizData = DEMO;
-  updateAppTitle();
-  initQuiz();
-  renderExos();
 }
 
 // ── Load file ──────────────────────────────────────────
@@ -1003,7 +932,7 @@ function reviewAnswers() {
 // ── Reset ──────────────────────────────────────────────
 function resetQuiz() {
   quizData = null;
-  updateAppTitle();
+  updateAppTitle(); // On remet le titre par défaut
   document.getElementById('quiz-setup').classList.remove('hidden');
   document.getElementById('quiz-running').classList.add('hidden');
   document.getElementById('quiz-result').classList.add('hidden');
