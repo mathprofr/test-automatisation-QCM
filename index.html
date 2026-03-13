@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine IA - Pro & Live</title>
+    <title>Quiz Engine - Audio & Interface</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -35,7 +35,7 @@
         #welcome-screen.hide { opacity: 0; pointer-events: none; }
         .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* --- Layout --- */
+        /* --- Header & Tabs --- */
         .header { text-align: center; margin-bottom: 35px; }
         .header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-top: 10px; }
         .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; }
@@ -44,6 +44,7 @@
         .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .tab.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
 
+        /* --- Cards --- */
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
         .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; text-align: left; animation: slideUp 0.4s ease; }
         
@@ -68,29 +69,29 @@
 
     <div id="welcome-screen">
         <h1 class="welcome-title">Quiz Engine</h1>
-        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Synchronisation Directe n8n</p>
-        <button class="btn btn-primary" onclick="initApp()">Entrer dans l'espace →</button>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Expérience Audio & Apprentissage</p>
+        <button class="btn btn-primary" onclick="initApp()">Lancer l'application →</button>
     </div>
 
     <div class="container">
         <div class="header">
-            <span class="badge" id="sync-status">Prêt</span>
-            <h1 id="main-title">Chargement...</h1>
+            <span class="badge" id="sync-status">Connecté</span>
+            <h1 id="main-title">Préparation...</h1>
         </div>
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
             <button class="tab" onclick="switchTab('exos')">Exercices</button>
-            <button class="tab" onclick="switchTab('import')">🔧 Sync</button>
+            <button class="tab" onclick="switchTab('import')">🔧 Config</button>
         </div>
 
         <div id="view-quiz">
             <div id="quiz-lobby" class="hidden">
                 <div class="card">
                     <span style="font-size:35px; display:block; margin-bottom:15px;">🚀</span>
-                    <h2 id="lobby-name" style="margin-bottom:8px;">Quiz</h2>
+                    <h2 id="lobby-name" style="margin-bottom:8px;">Quiz Prêt</h2>
                     <p id="lobby-details" style="color:var(--muted); font-size:13px; margin-bottom:30px;"></p>
-                    <button class="btn btn-primary" onclick="startQuiz()">Lancer le quiz</button>
+                    <button class="btn btn-primary" onclick="startQuiz()">Démarrer le quiz</button>
                 </div>
             </div>
 
@@ -104,7 +105,7 @@
             <div id="quiz-results" class="hidden">
                 <div class="card">
                     <div style="font-size:48px; font-weight:800; color:var(--accent); margin-bottom:10px" id="score-pct">0%</div>
-                    <p style="margin-bottom:25px;">Excellent travail !</p>
+                    <p style="margin-bottom:25px;">Session terminée !</p>
                     <button class="btn btn-primary" onclick="showLobby()">↺ Recommencer</button>
                 </div>
             </div>
@@ -116,9 +117,9 @@
 
         <div id="view-import" class="hidden">
             <div class="q-card">
-                <p style="font-size:11px; color:var(--accent); margin-bottom:15px;">DÉVELOPPEMENT</p>
-                <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">FORCER MISE À JOUR LIVE</button>
-                <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Vider le cache</button>
+                <p style="font-size:11px; color:var(--accent); margin-bottom:15px;">GESTION DES DONNÉES</p>
+                <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">Actualiser via GitHub</button>
+                <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Vider le cache local</button>
             </div>
         </div>
     </div>
@@ -126,44 +127,46 @@
     <script>
         let state = { data: null, currentIdx: 0, score: 0, audioCtx: null };
 
-        // --- Audio Pro ---
+        // --- Moteur Audio ---
         function playSfx(type) {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = state.audioCtx;
             const master = ctx.createGain();
-            master.gain.setValueAtTime(0.5, ctx.currentTime);
+            master.gain.setValueAtTime(0.6, ctx.currentTime); // Volume Boosté
             master.connect(ctx.destination);
 
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g); g.connect(master);
+
             if (type === 'correct') {
-                const o = ctx.createOscillator(); const g = ctx.createGain();
-                o.type = 'sine'; o.connect(g); g.connect(master);
+                o.type = 'sine';
                 o.frequency.setValueAtTime(523, ctx.currentTime);
                 o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-                g.gain.setValueAtTime(0.3, ctx.currentTime);
+                g.gain.setValueAtTime(0.4, ctx.currentTime);
                 g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 o.start(); o.stop(ctx.currentTime + 0.3);
             } else if (type === 'wrong') {
-                const o = ctx.createOscillator(); const g = ctx.createGain();
-                o.type = 'triangle'; o.connect(g); g.connect(master);
+                o.type = 'triangle';
                 o.frequency.setValueAtTime(220, ctx.currentTime);
                 o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
-                g.gain.setValueAtTime(0.2, ctx.currentTime);
+                g.gain.setValueAtTime(0.3, ctx.currentTime);
                 g.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 o.start(); o.stop(ctx.currentTime + 0.3);
             } else if (type === 'victory') {
                 [523, 659, 783, 1046].forEach((f, i) => {
-                    const o = ctx.createOscillator(); const g = ctx.createGain();
-                    o.connect(g); g.connect(master);
-                    o.frequency.setValueAtTime(f, ctx.currentTime + (i*0.1));
-                    g.gain.setValueAtTime(0.1, ctx.currentTime + (i*0.1));
-                    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i*0.1) + 0.5);
-                    o.start(ctx.currentTime + (i*0.1)); o.stop(ctx.currentTime + (i*0.1) + 0.5);
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(master);
+                    osc.frequency.setValueAtTime(f, ctx.currentTime + (i*0.1));
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + (i*0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i*0.1) + 0.5);
+                    osc.start(ctx.currentTime + (i*0.1)); osc.stop(ctx.currentTime + (i*0.1) + 0.5);
                 });
             }
         }
 
-        // --- Data handling ---
-        const CONFIG = { user: "mathprofr", repo: "test-automatisation-QCM", path: "quiz.json" };
+        // --- Logique App ---
+        const RAW_URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
 
         function initApp() {
             document.getElementById('welcome-screen').classList.add('hide');
@@ -178,31 +181,27 @@
 
         async function fetchGitHubData() {
             const status = document.getElementById('sync-status');
-            status.textContent = "SYNC...";
+            status.textContent = "MÀJ...";
             try {
-                // Pas de headers cache-control pour éviter le blocage CORS
-                const url = `https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`;
-                const res = await fetch(url);
+                // Utilisation du lien RAW avec cache-busting timestamp
+                const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
                 if (res.ok) {
-                    const json = await res.json();
-                    const binary = atob(json.content.replace(/\s/g, ''));
-                    const utf8Text = decodeURIComponent(escape(binary));
-                    state.data = JSON.parse(utf8Text);
+                    state.data = await res.json();
                     localStorage.setItem('quiz_cache', JSON.stringify(state.data));
-                    status.textContent = "LIVE";
+                    status.textContent = "À JOUR";
                     showLobby();
                 }
             } catch (e) { 
-                status.textContent = "OFFLINE";
-                console.error("Fetch error:", e);
+                status.textContent = "ERREUR";
+                console.error(e);
             }
         }
 
         function showLobby() {
             if (!state.data) return;
-            document.getElementById('main-title').textContent = state.data.titre || "Quiz";
+            document.getElementById('main-title').textContent = state.data.titre || "Quiz Engine";
             document.getElementById('lobby-name').textContent = state.data.titre || "Prêt";
-            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions • Via API n8n`;
+            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions chargées`;
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
@@ -261,7 +260,7 @@
         }
 
         function switchTab(t) {
-            document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['quiz','exos','import'][i] === t));
+            document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['quiz','exos','config'][i] === t));
             document.getElementById('view-quiz').classList.toggle('hidden', t !== 'quiz');
             document.getElementById('view-exos').classList.toggle('hidden', t !== 'exos');
             document.getElementById('view-import').classList.toggle('hidden', t !== 'import');
@@ -274,7 +273,7 @@
                 <div class="q-card" style="margin-bottom:15px">
                     <p style="font-size:11px; color:var(--accent)">EXERCICE ${i+1}</p>
                     <p style="font-size:14px; margin:10px 0;">${ex.enonce}</p>
-                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px;">VOIR SOLUTION</summary>
+                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px;">SOLUTION</summary>
                     <div style="margin-top:10px; font-size:13px; color:var(--muted)">${ex.corrige}</div></details>
                 </div>`).join('');
         }
