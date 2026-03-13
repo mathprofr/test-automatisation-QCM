@@ -528,9 +528,96 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+ 
+  /* ── Welcome Screen ─────────────────────────────────── */
+  #welcome-screen {
+    position: fixed; inset: 0; background: #05050a;
+    z-index: 1000; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden; cursor: pointer;
+  }
+  #welcome-screen.fade-out {
+    animation: welcomeFadeOut 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes welcomeFadeOut { to { opacity: 0; transform: scale(1.05); pointer-events: none; } }
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: orbFloat ease-in-out infinite; }
+  .orb-1 { width: 500px; height: 500px; background: rgba(124,106,255,0.18); top: -150px; right: -100px; animation-duration: 9s; }
+  .orb-2 { width: 400px; height: 400px; background: rgba(255,106,158,0.12); bottom: -100px; left: -100px; animation-duration: 11s; animation-delay: -4s; }
+  .orb-3 { width: 250px; height: 250px; background: rgba(106,255,212,0.1); top: 55%; right: 8%; animation-duration: 7s; animation-delay: -6s; }
+  @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(25px,-18px)} 66%{transform:translate(-18px,25px)} }
+  .welcome-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  }
+  .welcome-content { position: relative; z-index: 2; text-align: center; padding: 40px 20px; max-width: 800px; }
+  .welcome-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 40px;
+    opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .welcome-eyebrow::before, .welcome-eyebrow::after { content: ''; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); }
+  .welcome-eyebrow::after { background: linear-gradient(90deg, var(--accent), transparent); }
+  .welcome-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(72px, 14vw, 160px);
+    font-weight: 800; line-height: 0.88; letter-spacing: -0.04em;
+    margin-bottom: 40px; opacity: 0; animation: fadeUp 0.8s ease 0.45s forwards;
+  }
+  .welcome-title span {
+    display: block;
+    background: linear-gradient(135deg, #ffffff 0%, #d4ccff 35%, #ff6a9e 75%, #ffb347 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    background-size: 200% 200%; animation: gradientShift 6s ease infinite 1.3s;
+  }
+  @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+  .welcome-sub {
+    font-family: 'DM Mono', monospace; font-size: 15px; color: var(--muted);
+    margin-bottom: 56px; opacity: 0; animation: fadeUp 0.7s ease 0.65s forwards;
+    line-height: 1.7; max-width: 420px; margin-left: auto; margin-right: auto;
+  }
+  .welcome-btn {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 20px 56px;
+    background: linear-gradient(135deg, var(--accent) 0%, #9d8bff 50%, var(--accent2) 100%);
+    background-size: 200% 200%; border: none; border-radius: 6px; color: white;
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    opacity: 0; animation: fadeUp 0.7s ease 0.85s forwards, gradientShift 4s ease infinite 1.5s;
+    transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
+  }
+  .welcome-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 24px 64px rgba(124,106,255,0.4); }
+  .welcome-btn:active { transform: translateY(-1px) scale(0.99); }
+  .btn-arrow { font-size: 20px; transition: transform 0.3s; }
+  .welcome-btn:hover .btn-arrow { transform: translateX(6px); }
+  .welcome-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(107,107,128,0.5);
+    letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap;
+    opacity: 0; animation: fadeUp 0.7s ease 1.2s forwards;
+  }
 </style>
 </head>
 <body>
+ 
+<!-- ── WELCOME SCREEN ─────────────────────────────── -->
+<div id="welcome-screen" onclick="dismissWelcome()">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="welcome-grid"></div>
+  <div class="welcome-content">
+    <div class="welcome-eyebrow">Quiz Engine IA</div>
+    <h1 class="welcome-title"><span>Bienvenue !</span></h1>
+    <p class="welcome-sub">Tes cours transformés automatiquement<br>en quiz interactifs par l'IA.</p>
+    <button class="welcome-btn" onclick="event.stopPropagation(); dismissWelcome()">
+      Commencer <span class="btn-arrow">→</span>
+    </button>
+  </div>
+  <div class="welcome-hint">Cliquer n'importe où pour continuer</div>
+</div>
  
 <div class="container">
   <div class="header">
@@ -944,6 +1031,14 @@ function toggleCorrige(i) {
   icon.textContent = el.classList.contains('show') ? '▲' : '▼';
 }
  
+ 
+// ── Welcome Screen ─────────────────────────────────
+function dismissWelcome() {
+  const ws = document.getElementById('welcome-screen');
+  ws.classList.add('fade-out');
+  setTimeout(() => { ws.style.display = 'none'; }, 900);
+}
+ 
 // ── Appel auto-load ───────────────────────────────────
 autoLoadFromGitHub();
  
@@ -968,3 +1063,4 @@ if (zone) {
 </script>
 </body>
 </html>
+ 
