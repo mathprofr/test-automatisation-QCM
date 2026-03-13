@@ -3,55 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface Quiz GitHub</title>
+    <title>Quiz Engine Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Base de mise en page */
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        #quiz-wrapper { max-width: 600px; width: 100%; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface2: #1a1a26;
+            --accent: #7c6aff;
+            --accent2: #ff6a9e;
+            --accent3: #6affd4;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+            --correct: #2dff9e;
+            --wrong: #ff4d6d;
+            --border: rgba(124,106,255,0.2);
+        }
 
-        /* Styles des choix (états propres) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+
+        /* Effets de fond */
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,106,255,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse 40% 60% at 80% 80%, rgba(255,106,158,0.06) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .container { max-width: 780px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+
+        .header { text-align: center; margin-bottom: 48px; animation: fadeDown 0.6s ease; }
+        .badge { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 2px; margin-bottom: 16px; }
+        .header h1 { font-family: 'Syne', sans-serif; font-size: clamp(20px, 4vw, 32px); font-weight: 800; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .tabs { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 8px; margin-bottom: 32px; border: 1px solid var(--border); }
+        .tab { flex: 1; padding: 10px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+        .tab.active { background: var(--accent); color: white; }
+
+        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 48px; text-align: center; cursor: pointer; background: var(--surface); animation: fadeUp 0.5s ease; }
+        .upload-zone:hover { border-color: var(--accent); background: rgba(124,106,255,0.05); }
+
+        .quiz-lobby { text-align: center; padding: 60px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; animation: fadeUp 0.5s ease; }
+        .lobby-title { font-family: 'Syne', sans-serif; font-size: 28px; margin-bottom: 12px; color: white; }
+        .lobby-meta { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+        .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 16px; animation: fadeUp 0.4s ease; }
+        .q-text { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 20px; color: white; }
+        
+        .choices { display: grid; gap: 10px; }
         .choice { 
-            padding: 15px; 
-            margin-bottom: 10px; 
-            border: 2px solid #eee; 
-            border-radius: 5px; 
-            transition: 0.2s;
+            display: flex; align-items: center; gap: 12px; padding: 14px; 
+            background: var(--surface2); border: 1px solid transparent; border-radius: 8px; 
+            cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left; width: 100%;
         }
+        .choice:hover:not(.disabled) { border-color: var(--accent); background: rgba(124,106,255,0.1); }
+        
+        /* Correction Bug : Priorité aux classes de résultat */
+        .choice.correct { border-color: var(--correct) !important; background: rgba(45,255,158,0.1) !important; color: var(--correct) !important; }
+        .choice.wrong { border-color: var(--wrong) !important; background: rgba(255,77,109,0.1) !important; color: var(--wrong) !important; }
+        .choice.disabled { pointer-events: none; opacity: 0.7; }
 
-        /* Correction du bug : On sépare bien les états */
-        .choice.correct { 
-            background-color: #d4edda; 
-            border-color: #28a745; 
-            color: #155724; 
-        }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; text-decoration: none; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124,106,255,0.3); }
 
-        .choice.wrong { 
-            background-color: #f8d7da; 
-            border-color: #dc3545; 
-            color: #721c24; 
-        }
+        .result-screen { text-align: center; padding: 40px; }
+        .result-big { font-family: 'Syne', sans-serif; font-size: 72px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hidden { display: none !important; }
 
-        .choice.disabled { 
-            pointer-events: none; 
-            opacity: 0.8; 
-        }
+        #welcome-screen { position: fixed; inset: 0; background: #05050a; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #welcome-screen.fade-out { animation: welcomeFadeOut 0.8s forwards; }
+        
+        @keyframes welcomeFadeOut { to { opacity: 0; pointer-events: none; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div id="quiz-wrapper">
-        <div id="loader">Connexion à GitHub en cours...</div>
+<div id="welcome-screen">
+    <h1 class="welcome-title" style="font-family: 'Syne'; font-size: 48px; color: white; margin-bottom: 10px;">Quiz Engine</h1>
+    <p style="color: var(--muted); margin-bottom: 30px;">Prêt à tester vos connaissances ?</p>
+    <button class="btn btn-primary" onclick="dismissWelcome()">Entrer →</button>
+</div>
 
-        <div id="quiz-content" style="display:none;">
-            <h2 id="question-title"></h2>
-            
-            <div id="choices-list">
-                </div>
+<div class="container">
+    <div class="header">
+        <div class="badge">Session Interactive</div>
+        <h1 id="main-title">En attente de contenu...</h1>
+    </div>
 
-            <hr>
-            <div id="score-board">Score : <span id="current-score">0</span></div>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
+        <button class="tab" onclick="switchTab('exos')">Exercices</button>
+        <button class="tab" onclick="switchTab('import')">Configuration</button>
+    </div>
+
+    <div id="tab-quiz">
+        <div id="quiz-empty">
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                <span style="font-size:40px">📁</span>
+                <p>Chargement auto depuis GitHub ou cliquez pour importer un JSON.</p>
+            </div>
+            <input type="file" id="fileInput" accept=".json" class="hidden" onchange="loadFile(event)">
+        </div>
+
+        <div id="quiz-lobby" class="hidden">
+            <div class="quiz-lobby">
+                <h2 class="lobby-title" id="lobby-quiz-title">Chargement...</h2>
+                <p class="lobby-meta" id="lobby-quiz-info">Analyse des questions...</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Lancer le quiz maintenant →</button>
+            </div>
+        </div>
+
+        <div id="quiz-running" class="hidden">
+            <div id="questionsContainer"></div>
+            <div style="text-align:center; margin-top:20px;">
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="display:none">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="quiz-result" class="hidden">
+            <div class="result-screen">
+                <div class="result-big" id="finalScore">0%</div>
+                <p style="margin-bottom:30px; color:var(--muted)">Score final obtenu</p>
+                <button class="btn btn-primary" onclick="resetToLobby()">↺ Recommencer</button>
+            </div>
         </div>
     </div>
+
+    <div id="tab-exos" class="hidden">
+        <div id="exosContainer" class="upload-zone">Aucun exercice chargé.</div>
+    </div>
+
+    <div id="tab-import" class="hidden">
+        <textarea id="jsonPaste" style="width:100%; height:200px; background:var(--surface); color:var(--accent3); border:1px solid var(--border); padding:15px; border-radius:8px; margin-bottom:15px;" placeholder="Collez votre code JSON ici..."></textarea>
+        <button class="btn btn-primary" onclick="importJSON()">Valider l'import</button>
+    </div>
+</div>
+
+<script>
+    let quizData = null;
+    let currentQ = 0;
+    let score = 0;
+
+    // --- IMPORTATION GITHUB ---
+    async function autoLoadFromGitHub() {
+        const GITHUB_RAW_URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
+        try {
+            const res = await fetch(`${GITHUB_RAW_URL}?t=${Date.now()}`);
+            if (res.ok) {
+                quizData = await res.json();
+                showLobby();
+            } else {
+                console.error("Fichier non trouvé sur GitHub");
+            }
+        } catch (e) {
+            console.error("Erreur de connexion GitHub");
+        }
+    }
+
+    function dismissWelcome() {
+        document.getElementById('welcome-screen').classList.add('fade-out');
+        autoLoadFromGitHub(); // Se lance tout seul au clic sur Entrer
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['quiz','exos','import'][i] === tab));
+        document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
+        document.getElementById('tab-exos').classList.toggle('hidden', tab !== 'exos');
+        document.getElementById('tab-import').classList.toggle('hidden', tab !== 'import');
+    }
+
+    function showLobby() {
+        if(!quizData) return;
+        document.getElementById('main-title').textContent = quizData.titre || "Quiz chargé";
+        document.getElementById('lobby-quiz-title').textContent = quizData.titre || "Prêt ?";
+        document.getElementById('lobby-quiz-info').textContent = `${quizData.questions.length} questions détectées`;
+        document.getElementById('quiz-empty').classList.add('hidden');
+        document.getElementById('quiz-lobby').classList.remove('hidden');
+        document.getElementById('quiz-running').classList.add('hidden');
+        document.getElementById('quiz-result').classList.add('hidden');
+        renderExos();
+    }
+
+    function startQuiz() {
+        currentQ = 0; score = 0;
+        document.getElementById('quiz-lobby').classList.add('hidden');
+        document.getElementById('quiz-running').classList.remove('hidden');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = quizData.questions[currentQ];
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = `
+            <div class="question-card">
+                <div style="font-size:12px; color:var(--accent); margin-bottom:10px">QUESTION ${currentQ + 1} / ${quizData.questions.length}</div>
+                <div class="q-text">${q.question}</div>
+                <div class="choices" id="choicesBox"></div>
+                <div id="explanationBox" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.1); border-radius:8px; font-size:13px; color:var(--accent3)">
+                    ${q.explication || 'Bonne réponse !'}
+                </div>
+            </div>
+        `;
+
+        const box = document.getElementById('choicesBox');
+        q.choix.forEach((c, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'choice';
+            btn.innerHTML = `<span style="opacity:0.3; margin-right:10px">${String.fromCharCode(65+i)}</span> ${c}`;
+            btn.onclick = () => checkAnswer(c, q.reponse, btn);
+            box.appendChild(btn);
+        });
+        document.getElementById('nextBtn').style.display = 'none';
+    }
+
+    // --- CORRECTION DU BUG DES CLASSES ---
+    function checkAnswer(choice, correct, selectedBtn) {
+        const allButtons = document.querySelectorAll('.choice');
+        const isCorrect = (choice.trim() === correct.trim());
+
+        if(isCorrect) score++;
+
+        allButtons.forEach(btn => {
+            btn.classList.add('disabled');
+            // On nettoie le texte pour comparer sans les lettres A, B, C...
+            const btnText = btn.innerText.substring(2).trim(); 
+            
+            if(btnText === correct.trim()) {
+                btn.classList.add('correct'); // La bonne réponse devient verte
+            } else if(btn === selectedBtn && !isCorrect) {
+                btn.classList.add('wrong'); // Uniquement le bouton cliqué devient rouge si faux
+            }
+        });
+
+        document.getElementById('explanationBox').classList.remove('hidden');
+        document.getElementById('nextBtn').style.display = 'inline-flex';
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if(currentQ < quizData.questions.length) renderQuestion();
+        else {
+            document.getElementById('quiz-running').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = Math.round((score/quizData.questions.length)*100) + '%';
+        }
+    }
+
+    function resetToLobby() { showLobby(); }
+
+    function renderExos() {
+        const container = document.getElementById('exosContainer');
+        if(!quizData.exercices) return;
+        container.innerHTML = quizData.exercices.map((ex, i) => `
+            <div class="question-card" style="text-align:left">
+                <div style="color:var(--accent2); font-size:11px; margin-bottom:10px">EXERCICE ${i+1}</div>
+                <div class="q-text" style="font-size:14px">${ex.enonce}</div>
+                <details style="margin-top:10px; cursor:pointer">
+                    <summary style="color:var(--muted); font-size:12px">Voir la solution</summary>
+                    <div style="margin-top:10px; padding:10px; background:var(--surface2); border-radius:5px; font-size:13px">${ex.corrige}</div>
+                </details>
+            </div>
+        `).join('');
+    }
+
+    // Fonctions d'import manuel
+    function loadFile(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = ev => { quizData = JSON.parse(ev.target.result); showLobby(); };
+        reader.readAsText(file);
+    }
+
+    function importJSON() {
+        try {
+            quizData = JSON.parse(document.getElementById('jsonPaste').value);
+            showLobby();
+            switchTab('quiz');
+        } catch(e) { alert("Format JSON invalide"); }
+    }
+</script>
 
 </body>
 </html>
