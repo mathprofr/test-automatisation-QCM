@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine IA</title>
+    <title>Quiz Engine IA - Live API</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,13 +22,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'DM Mono', monospace; 
-            min-height: 100vh; 
-            overflow-x: hidden; 
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
 
         .bg-glow {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -43,66 +37,44 @@
         #welcome-screen {
             position: fixed; inset: 0; background: var(--bg); z-index: 2000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.6s ease;
         }
         #welcome-screen.hide { opacity: 0; pointer-events: none; }
-        
-        .welcome-title {
-            font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 12px;
-            background: linear-gradient(135deg, #fff, var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .welcome-sub { color: var(--muted); font-size: 13px; margin-bottom: 30px; }
+        .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-sub { color: var(--muted); font-size: 13px; margin-bottom: 25px; }
 
-        /* --- Header & Tabs --- */
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-top: 10px; }
+        /* --- UI Elements --- */
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-top: 10px; }
         .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; }
 
         .tabs { display: flex; gap: 8px; background: var(--surface); padding: 6px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
         .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .tab.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
 
-        /* --- Cards --- */
-        .card-lobby {
-            background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-            padding: 50px 30px; text-align: center; animation: zoomIn 0.5s ease;
-        }
-        .lobby-icon { font-size: 40px; margin-bottom: 20px; display: block; }
-        .lobby-title { font-family: 'Syne', sans-serif; font-size: 22px; margin-bottom: 10px; color: white; }
-        .lobby-stats { color: var(--muted); font-size: 14px; margin-bottom: 35px; }
+        .card-lobby { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
+        .lobby-icon { font-size: 35px; margin-bottom: 15px; display: block; }
+        .lobby-title { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 8px; color: white; }
+        .lobby-stats { color: var(--muted); font-size: 13px; margin-bottom: 30px; }
 
-        .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 30px; animation: slideUp 0.4s ease; }
-        .q-meta { font-size: 11px; color: var(--accent); margin-bottom: 15px; letter-spacing: 0.1em; }
-        .q-text { font-family: 'Syne', sans-serif; font-size: 18px; line-height: 1.5; color: #fff; margin-bottom: 25px; }
+        .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; animation: slideUp 0.4s ease; }
+        .q-meta { font-size: 11px; color: var(--accent); margin-bottom: 12px; letter-spacing: 0.1em; }
+        .q-text { font-family: 'Syne', sans-serif; font-size: 17px; line-height: 1.5; color: #fff; margin-bottom: 22px; }
         
-        .choices { display: grid; gap: 12px; }
-        .choice { 
-            display: flex; align-items: center; padding: 16px; background: var(--surface-light); 
-            border: 1px solid transparent; border-radius: 10px; cursor: pointer; 
-            transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left;
-        }
+        .choices { display: grid; gap: 10px; }
+        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; }
         .choice:hover:not(.disabled) { border-color: var(--accent); background: rgba(124, 106, 255, 0.08); }
         .choice.correct { border-color: var(--correct); background: rgba(45, 255, 158, 0.08); color: var(--correct); }
         .choice.wrong { border-color: var(--wrong); background: rgba(255, 77, 109, 0.08); color: var(--wrong); }
 
-        .explanation { margin-top: 20px; padding: 15px; background: rgba(106,255,212,0.05); border-radius: 8px; color: var(--accent3); font-size: 13px; border-left: 2px solid var(--accent3); }
-
-        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-        .btn-small { padding: 8px 16px; font-size: 11px; }
+        .btn-small { padding: 6px 12px; font-size: 10px; }
 
         .hidden { display: none !important; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        .result-circle { 
-            width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
-            font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #fff;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -111,49 +83,42 @@
 
     <div id="welcome-screen">
         <h1 class="welcome-title">Quiz Engine</h1>
-        <p class="welcome-sub">Prêt pour votre session d'étude ?</p>
-        <button class="btn btn-primary" onclick="initApp()">Lancer l'application →</button>
+        <p class="welcome-sub">Synchronisé via n8n & API GitHub</p>
+        <button class="btn btn-primary" onclick="initApp()">Commencer →</button>
     </div>
 
     <div class="container">
         <div class="header">
-            <span class="badge">Session Active</span>
-            <h1 id="main-title">Chargement...</h1>
+            <span class="badge" id="sync-status">Connecté</span>
+            <h1 id="main-title">Préparation...</h1>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
+            <button class="tab active" onclick="switchTab('quiz')">Entraînement</button>
             <button class="tab" onclick="switchTab('exos')">Exercices</button>
-            <button class="tab" onclick="switchTab('import')">🔧 Config</button>
+            <button class="tab" onclick="switchTab('import')">🔧 Sync</button>
         </div>
 
         <div id="view-quiz">
-            <div id="quiz-empty" class="card-lobby">
-                <span class="lobby-icon">📥</span>
-                <h2 class="lobby-title">Aucune donnée</h2>
-                <button class="btn btn-ghost" onclick="document.getElementById('fileInput').click()">Charger un fichier JSON</button>
-                <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
-            </div>
-
             <div id="quiz-lobby" class="hidden">
                 <div class="card-lobby">
-                    <span class="lobby-icon">✨</span>
-                    <h2 class="lobby-title" id="lobby-name">Quiz Prêt</h2>
-                    <p class="lobby-stats" id="lobby-details">-- questions détectées</p>
-                    <button class="btn btn-primary" onclick="startQuiz()">Démarrer le quiz</button>
+                    <span class="lobby-icon">📡</span>
+                    <h2 class="lobby-title" id="lobby-name">Flux API Direct</h2>
+                    <p class="lobby-stats" id="lobby-details">Analyse des questions...</p>
+                    <button class="btn btn-primary" onclick="startQuiz()">Lancer le quiz</button>
                 </div>
             </div>
 
             <div id="quiz-running" class="hidden">
                 <div id="question-container"></div>
-                <div style="text-align:center; margin-top:30px;">
+                <div style="text-align:center; margin-top:25px;">
                     <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">Suivant →</button>
                 </div>
             </div>
 
             <div id="quiz-results" class="hidden">
-                <div class="result-screen" style="text-align:center">
-                    <div class="result-circle" id="score-pct">0%</div>
+                <div class="card-lobby">
+                    <div style="font-size:40px; font-weight:800; color:var(--accent); margin-bottom:10px" id="score-pct">0%</div>
                     <button class="btn btn-primary" onclick="showLobby()">↺ Recommencer</button>
                 </div>
             </div>
@@ -165,43 +130,29 @@
 
         <div id="view-import" class="hidden">
             <div class="question-card">
-                <p class="q-meta">SYNCHRONISATION</p>
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="btn btn-ghost btn-small" onclick="fetchGitHubData()">Forcer Maj GitHub</button>
-                    <button class="btn btn-ghost btn-small" style="border-color:var(--wrong); color:var(--wrong);" onclick="clearCache()">Vider la mémoire</button>
-                </div>
-                <p class="q-meta">IMPORT DIRECT (INSTANTANÉ)</p>
-                <textarea id="json-input" style="width:100%; height:150px; background:var(--bg); color:var(--accent3); border:1px solid var(--border); border-radius:10px; padding:15px; font-size:12px; outline:none; font-family:inherit;"></textarea>
-                <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="manualImport()">Importer & Sauvegarder</button>
+                <p class="q-meta">ACTION RAPIDE</p>
+                <button class="btn btn-primary" style="width:100%; margin-bottom:20px;" onclick="fetchGitHubData()">FORCER LA SYNC (API LIVE)</button>
+                <p class="q-meta">MÉMOIRE</p>
+                <button class="btn btn-ghost btn-small" style="width:100%; color:var(--wrong);" onclick="localStorage.clear(); location.reload();">Vider le cache local</button>
             </div>
         </div>
     </div>
 
     <script>
-        let state = {
-            data: null,
-            currentIdx: 0,
-            score: 0,
-            audioCtx: null
-        };
+        let state = { data: null, currentIdx: 0, score: 0 };
 
-        function playSound() {
-            if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = state.audioCtx.createOscillator();
-            const gain = state.audioCtx.createGain();
-            osc.frequency.setValueAtTime(400, state.audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, state.audioCtx.currentTime + 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.2);
-            osc.connect(gain); gain.connect(state.audioCtx.destination);
-            osc.start(); osc.stop(state.audioCtx.currentTime + 0.2);
-        }
+        // --- API CONFIG ---
+        const REPO_CONFIG = {
+            user: "mathprofr",
+            repo: "test-automatisation-QCM",
+            path: "quiz.json"
+        };
 
         function initApp() {
             document.getElementById('welcome-screen').classList.add('hide');
-            // 1. On regarde dans le localStorage
-            const saved = localStorage.getItem('quiz_data_cache');
-            if (saved) {
-                state.data = JSON.parse(saved);
+            const cache = localStorage.getItem('quiz_cache');
+            if (cache) {
+                state.data = JSON.parse(cache);
                 showLobby();
             } else {
                 fetchGitHubData();
@@ -209,32 +160,39 @@
         }
 
         async function fetchGitHubData() {
+            const status = document.getElementById('sync-status');
+            status.textContent = "SYNCHRONISATION...";
+            status.style.color = "var(--accent2)";
+
             try {
-                document.getElementById('main-title').textContent = "Sync en cours...";
-                const res = await fetch(`https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json?t=${Date.now()}`);
+                // Appel API direct (beaucoup plus rapide que le RAW de GitHub)
+                const url = `https://api.github.com/repos/${REPO_CONFIG.user}/${REPO_CONFIG.repo}/contents/${REPO_CONFIG.path}?t=${Date.now()}`;
+                const res = await fetch(url, { headers: { 'Cache-Control': 'no-cache' } });
+                
                 if (res.ok) {
-                    state.data = await res.json();
-                    saveToCache(state.data);
+                    const json = await res.json();
+                    // Décodage Base64 (API GitHub Standard) avec support UTF-8
+                    const binary = atob(json.content.replace(/\s/g, ''));
+                    const utf8Text = decodeURIComponent(escape(binary));
+                    
+                    state.data = JSON.parse(utf8Text);
+                    localStorage.setItem('quiz_cache', JSON.stringify(state.data));
+                    
+                    status.textContent = "À JOUR";
+                    status.style.color = "var(--correct)";
                     showLobby();
                 }
-            } catch (e) { alert("GitHub indisponible. Utilisez l'import manuel."); }
-        }
-
-        function saveToCache(data) {
-            localStorage.setItem('quiz_data_cache', JSON.stringify(data));
-        }
-
-        function clearCache() {
-            localStorage.removeItem('quiz_data_cache');
-            location.reload();
+            } catch (e) {
+                status.textContent = "ERREUR SYNC";
+                status.style.color = "var(--wrong)";
+                console.error(e);
+            }
         }
 
         function showLobby() {
             if (!state.data) return;
-            document.getElementById('main-title').textContent = state.data.titre || "Quiz Engine";
-            document.getElementById('lobby-name').textContent = state.data.titre || "Quiz Prêt";
-            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions chargées`;
-            document.getElementById('quiz-empty').classList.add('hidden');
+            document.getElementById('main-title').textContent = state.data.titre || "Quiz IA";
+            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions synchronisées via n8n`;
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
@@ -242,7 +200,6 @@
         }
 
         function startQuiz() {
-            playSound();
             state.currentIdx = 0; state.score = 0;
             document.getElementById('quiz-lobby').classList.add('hidden');
             document.getElementById('quiz-running').classList.remove('hidden');
@@ -253,33 +210,35 @@
             const q = state.data.questions[state.currentIdx];
             const container = document.getElementById('question-container');
             document.getElementById('btn-next').classList.add('hidden');
+            
             container.innerHTML = `
                 <div class="question-card">
                     <p class="q-meta">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
                     <h2 class="q-text">${q.question}</h2>
-                    <div class="choices" id="choices-box"></div>
-                    <div id="expl" class="explanation hidden">${q.explication || ''}</div>
+                    <div class="choices" id="choice-grid"></div>
+                    <div id="expl" class="hidden" style="margin-top:20px; padding:12px; background:rgba(106,255,212,0.05); border-radius:8px; font-size:13px; color:var(--accent3); border-left:2px solid var(--accent3); line-height:1.6">
+                        ${q.explication || ''}
+                    </div>
                 </div>`;
+
             q.choix.forEach((c, i) => {
                 const b = document.createElement('button');
                 b.className = 'choice';
-                b.innerHTML = `<span style="color:var(--accent); font-weight:800; margin-right:10px">${String.fromCharCode(65+i)}</span> ${c}`;
-                b.onclick = () => handleAnswer(c, q.reponse, b);
-                document.getElementById('choices-box').appendChild(b);
+                b.innerHTML = `<span style="color:var(--accent); font-weight:800; margin-right:12px">${String.fromCharCode(65+i)}</span> ${c}`;
+                b.onclick = () => {
+                    const all = document.querySelectorAll('.choice');
+                    const isWin = (c === q.reponse);
+                    if(isWin) state.score++;
+                    all.forEach(btn => {
+                        btn.classList.add('disabled'); btn.onclick = null;
+                        if(btn.innerText.includes(q.reponse)) btn.classList.add('correct');
+                    });
+                    if(!isWin) b.classList.add('wrong');
+                    document.getElementById('expl').classList.remove('hidden');
+                    document.getElementById('btn-next').classList.remove('hidden');
+                };
+                document.getElementById('choice-grid').appendChild(b);
             });
-        }
-
-        function handleAnswer(sel, cor, el) {
-            const all = document.querySelectorAll('.choice');
-            const win = (sel === cor);
-            if (win) state.score++;
-            all.forEach(b => {
-                b.onclick = null; b.classList.add('disabled');
-                if (b.innerText.includes(cor)) b.classList.add('correct');
-            });
-            if (!win) el.classList.add('wrong');
-            document.getElementById('expl').classList.remove('hidden');
-            document.getElementById('btn-next').classList.remove('hidden');
         }
 
         function nextQuestion() {
@@ -300,30 +259,15 @@
         }
 
         function renderExos() {
-            const el = document.getElementById('exos-list');
-            if (!state.data.exercices) { el.innerHTML = ""; return; }
-            el.innerHTML = state.data.exercices.map((ex, i) => `
+            const list = document.getElementById('exos-list');
+            if(!state.data.exercices) return;
+            list.innerHTML = state.data.exercices.map((ex, i) => `
                 <div class="question-card" style="margin-bottom:15px">
                     <p class="q-meta">EXERCICE ${i+1}</p>
-                    <p class="q-text" style="font-size:15px">${ex.enonce}</p>
-                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:12px">VOIR CORRIGÉ</summary>
-                    <div style="margin-top:10px; font-size:14px; color:var(--muted)">${ex.corrige}</div></details>
+                    <p class="q-text" style="font-size:14px">${ex.enonce}</p>
+                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px; font-weight:bold">CORRIGÉ</summary>
+                    <div style="margin-top:10px; font-size:13px; color:var(--muted); line-height:1.6">${ex.corrige}</div></details>
                 </div>`).join('');
-        }
-
-        function manualImport() {
-            try {
-                const raw = document.getElementById('json-input').value;
-                state.data = JSON.parse(raw);
-                saveToCache(state.data);
-                showLobby(); switchTab('quiz');
-            } catch(e) { alert("JSON Invalide"); }
-        }
-
-        function handleFileUpload(e) {
-            const fr = new FileReader();
-            fr.onload = () => { state.data = JSON.parse(fr.result); saveToCache(state.data); showLobby(); };
-            fr.readAsText(e.target.files[0]);
         }
     </script>
 </body>
