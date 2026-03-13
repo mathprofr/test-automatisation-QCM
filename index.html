@@ -3,74 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine - Audio & Interface</title>
+    <title>Quiz Engine - Fix Correct/Wrong</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050508; --surface: #0f0f17; --surface-light: #161621;
             --accent: #7c6aff; --accent-glow: rgba(124, 106, 255, 0.3);
-            --accent2: #ff6a9e; --accent3: #6affd4; --text: #e8e8f0;
-            --muted: #6b6b80; --correct: #2dff9e; --wrong: #ff4d6d;
-            --border: rgba(124, 106, 255, 0.15);
+            --text: #e8e8f0; --muted: #6b6b80; --correct: #2dff9e; --wrong: #ff4d6d;
+            --border: rgba(124, 106, 255, 0.15); --accent3: #6affd4;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
-
-        .bg-glow {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background: 
-                radial-gradient(circle at 10% 10%, rgba(124,106,255,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 90% 90%, rgba(255,106,158,0.03) 0%, transparent 50%);
-        }
-
+        .bg-glow { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at 10% 10%, rgba(124,106,255,0.05) 0%, transparent 50%), radial-gradient(circle at 90% 90%, rgba(255,106,158,0.03) 0%, transparent 50%); }
         .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
-
-        /* --- Welcome --- */
-        #welcome-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease;
-        }
+        #welcome-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
         #welcome-screen.hide { opacity: 0; pointer-events: none; }
-        .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* --- Header & Tabs --- */
+        .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 25px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header { text-align: center; margin-bottom: 35px; }
         .header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-top: 10px; }
         .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; }
-
         .tabs { display: flex; gap: 8px; background: var(--surface); padding: 6px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
         .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .tab.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-
-        /* --- Cards --- */
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
         .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; text-align: left; animation: slideUp 0.4s ease; }
-        
         .choices { display: grid; gap: 10px; margin-top: 20px; }
-        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left; }
+        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left; width: 100%; }
         .choice:hover:not(.disabled) { border-color: var(--accent); background: rgba(124, 106, 255, 0.08); }
-        .choice.correct { border-color: var(--correct); background: rgba(45, 255, 158, 0.08); color: var(--correct); }
-        .choice.wrong { border-color: var(--wrong); background: rgba(255, 77, 109, 0.08); color: var(--wrong); }
-
+        .choice.correct { border-color: var(--correct) !important; background: rgba(45, 255, 158, 0.08) !important; color: var(--correct) !important; }
+        .choice.wrong { border-color: var(--wrong) !important; background: rgba(255, 77, 109, 0.08) !important; color: var(--wrong) !important; }
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-
         .hidden { display: none !important; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
-
     <div class="bg-glow"></div>
-
     <div id="welcome-screen">
         <h1 class="welcome-title">Quiz Engine</h1>
-        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Expérience Audio & Apprentissage</p>
-        <button class="btn btn-primary" onclick="initApp()">Lancer l'application →</button>
+        <button class="btn btn-primary" onclick="initApp()">Commencer →</button>
     </div>
 
     <div class="container">
@@ -78,7 +52,6 @@
             <span class="badge" id="sync-status">Connecté</span>
             <h1 id="main-title">Préparation...</h1>
         </div>
-
         <div class="tabs">
             <button class="tab active" onclick="switchTab('quiz')">Quiz</button>
             <button class="tab" onclick="switchTab('exos')">Exercices</button>
@@ -89,37 +62,30 @@
             <div id="quiz-lobby" class="hidden">
                 <div class="card">
                     <span style="font-size:35px; display:block; margin-bottom:15px;">🚀</span>
-                    <h2 id="lobby-name" style="margin-bottom:8px;">Quiz Prêt</h2>
-                    <p id="lobby-details" style="color:var(--muted); font-size:13px; margin-bottom:30px;"></p>
-                    <button class="btn btn-primary" onclick="startQuiz()">Démarrer le quiz</button>
+                    <h2 id="lobby-name">Prêt</h2>
+                    <p id="lobby-details" style="color:var(--muted); font-size:13px; margin: 15px 0 30px 0;"></p>
+                    <button class="btn btn-primary" onclick="startQuiz()">Démarrer</button>
                 </div>
             </div>
-
             <div id="quiz-running" class="hidden">
                 <div id="question-container"></div>
                 <div style="text-align:center; margin-top:25px;">
                     <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">Suivant →</button>
                 </div>
             </div>
-
             <div id="quiz-results" class="hidden">
                 <div class="card">
                     <div style="font-size:48px; font-weight:800; color:var(--accent); margin-bottom:10px" id="score-pct">0%</div>
-                    <p style="margin-bottom:25px;">Session terminée !</p>
                     <button class="btn btn-primary" onclick="showLobby()">↺ Recommencer</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-exos" class="hidden">
-            <div id="exos-list"></div>
-        </div>
-
+        <div id="view-exos" class="hidden"><div id="exos-list"></div></div>
         <div id="view-import" class="hidden">
             <div class="q-card">
-                <p style="font-size:11px; color:var(--accent); margin-bottom:15px;">GESTION DES DONNÉES</p>
                 <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">Actualiser via GitHub</button>
-                <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Vider le cache local</button>
+                <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Réinitialiser le cache</button>
             </div>
         </div>
     </div>
@@ -127,27 +93,24 @@
     <script>
         let state = { data: null, currentIdx: 0, score: 0, audioCtx: null };
 
-        // --- Moteur Audio ---
         function playSfx(type) {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = state.audioCtx;
             const master = ctx.createGain();
-            master.gain.setValueAtTime(0.6, ctx.currentTime); // Volume Boosté
+            master.gain.setValueAtTime(0.5, ctx.currentTime);
             master.connect(ctx.destination);
 
-            const o = ctx.createOscillator();
-            const g = ctx.createGain();
-            o.connect(g); g.connect(master);
-
             if (type === 'correct') {
-                o.type = 'sine';
+                const o = ctx.createOscillator(); const g = ctx.createGain();
+                o.type = 'sine'; o.connect(g); g.connect(master);
                 o.frequency.setValueAtTime(523, ctx.currentTime);
                 o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
                 g.gain.setValueAtTime(0.4, ctx.currentTime);
                 g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 o.start(); o.stop(ctx.currentTime + 0.3);
             } else if (type === 'wrong') {
-                o.type = 'triangle';
+                const o = ctx.createOscillator(); const g = ctx.createGain();
+                o.type = 'triangle'; o.connect(g); g.connect(master);
                 o.frequency.setValueAtTime(220, ctx.currentTime);
                 o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
                 g.gain.setValueAtTime(0.3, ctx.currentTime);
@@ -165,25 +128,19 @@
             }
         }
 
-        // --- Logique App ---
         const RAW_URL = "https://raw.githubusercontent.com/mathprofr/test-automatisation-QCM/main/quiz.json";
 
         function initApp() {
             document.getElementById('welcome-screen').classList.add('hide');
             const cache = localStorage.getItem('quiz_cache');
-            if (cache) {
-                state.data = JSON.parse(cache);
-                showLobby();
-            } else {
-                fetchGitHubData();
-            }
+            if (cache) { state.data = JSON.parse(cache); showLobby(); } 
+            else { fetchGitHubData(); }
         }
 
         async function fetchGitHubData() {
             const status = document.getElementById('sync-status');
             status.textContent = "MÀJ...";
             try {
-                // Utilisation du lien RAW avec cache-busting timestamp
                 const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
                 if (res.ok) {
                     state.data = await res.json();
@@ -191,16 +148,12 @@
                     status.textContent = "À JOUR";
                     showLobby();
                 }
-            } catch (e) { 
-                status.textContent = "ERREUR";
-                console.error(e);
-            }
+            } catch (e) { status.textContent = "ERREUR"; }
         }
 
         function showLobby() {
             if (!state.data) return;
             document.getElementById('main-title').textContent = state.data.titre || "Quiz Engine";
-            document.getElementById('lobby-name').textContent = state.data.titre || "Prêt";
             document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions chargées`;
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
@@ -232,14 +185,22 @@
             q.choix.forEach((c, i) => {
                 const b = document.createElement('button');
                 b.className = 'choice';
+                // Stockage propre de la valeur pour comparaison
+                b.dataset.value = c.trim();
                 b.innerHTML = `<span style="color:var(--accent); font-weight:800; margin-right:12px">${String.fromCharCode(65+i)}</span> ${c}`;
+                
                 b.onclick = () => {
-                    const win = (c === q.reponse);
+                    const cleanAnswer = q.reponse.trim();
+                    const win = (b.dataset.value === cleanAnswer);
+                    
                     if(win) { state.score++; playSfx('correct'); } else { playSfx('wrong'); }
+                    
                     document.querySelectorAll('.choice').forEach(btn => {
                         btn.classList.add('disabled'); btn.onclick = null;
-                        if(btn.innerText.includes(q.reponse)) btn.classList.add('correct');
+                        // Correction : on compare la valeur stockée, pas le texte affiché
+                        if(btn.dataset.value === cleanAnswer) btn.classList.add('correct');
                     });
+                    
                     if(!win) b.classList.add('wrong');
                     document.getElementById('expl').classList.remove('hidden');
                     document.getElementById('btn-next').classList.remove('hidden');
