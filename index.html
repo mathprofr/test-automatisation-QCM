@@ -19,9 +19,9 @@
     --wrong: #ff4d6d;
     --border: rgba(124,106,255,0.2);
   }
- 
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
- 
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -29,7 +29,7 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
- 
+
   /* Animated background */
   body::before {
     content: '';
@@ -42,7 +42,7 @@
     pointer-events: none;
     z-index: 0;
   }
- 
+
   .container {
     max-width: 780px;
     margin: 0 auto;
@@ -50,14 +50,14 @@
     position: relative;
     z-index: 1;
   }
- 
+
   /* Header */
   .header {
     text-align: center;
     margin-bottom: 48px;
     animation: fadeDown 0.6s ease;
   }
- 
+
   .badge {
     display: inline-block;
     font-size: 11px;
@@ -69,18 +69,19 @@
     border-radius: 2px;
     margin-bottom: 16px;
   }
- 
+
   .header h1 {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: clamp(24px, 5vw, 42px);
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.2;
     background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    transition: all 0.5s ease;
   }
- 
+
   /* Tabs */
   .tabs {
     display: flex;
@@ -91,7 +92,7 @@
     margin-bottom: 32px;
     border: 1px solid var(--border);
   }
- 
+
   .tab {
     flex: 1;
     padding: 10px;
@@ -106,17 +107,17 @@
     transition: all 0.2s;
     letter-spacing: 0.05em;
   }
- 
+
   .tab.active {
     background: var(--accent);
     color: white;
   }
- 
+
   .tab:hover:not(.active) {
     color: var(--text);
     background: var(--surface2);
   }
- 
+
   /* Upload zone */
   .upload-zone {
     border: 2px dashed var(--border);
@@ -128,30 +129,30 @@
     background: var(--surface);
     animation: fadeUp 0.5s ease;
   }
- 
+
   .upload-zone:hover, .upload-zone.drag {
     border-color: var(--accent);
     background: rgba(124,106,255,0.05);
   }
- 
+
   .upload-icon {
     font-size: 48px;
     margin-bottom: 16px;
     display: block;
   }
- 
+
   .upload-zone p {
     color: var(--muted);
     font-size: 14px;
     line-height: 1.6;
   }
- 
+
   .upload-zone strong {
     color: var(--accent);
   }
- 
+
   #fileInput { display: none; }
- 
+
   /* Progress bar */
   .progress-bar {
     height: 3px;
@@ -160,14 +161,14 @@
     margin-bottom: 32px;
     overflow: hidden;
   }
- 
+
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     border-radius: 2px;
     transition: width 0.4s ease;
   }
- 
+
   /* Score pill */
   .score-pill {
     display: flex;
@@ -180,14 +181,14 @@
     margin-bottom: 24px;
     font-size: 13px;
   }
- 
+
   .score-num {
     font-family: 'Syne', sans-serif;
     font-size: 20px;
     font-weight: 800;
     color: var(--accent);
   }
- 
+
   /* Question card */
   .question-card {
     background: var(--surface);
@@ -198,11 +199,11 @@
     animation: fadeUp 0.4s ease;
     transition: border-color 0.3s;
   }
- 
+
   .question-card:hover {
     border-color: rgba(124,106,255,0.4);
   }
- 
+
   .q-number {
     font-size: 11px;
     letter-spacing: 0.15em;
@@ -213,14 +214,14 @@
     align-items: center;
     gap: 8px;
   }
- 
+
   .q-number::after {
     content: '';
     flex: 1;
     height: 1px;
     background: var(--border);
   }
- 
+
   .q-text {
     font-family: 'Syne', sans-serif;
     font-size: 16px;
@@ -229,13 +230,13 @@
     margin-bottom: 20px;
     color: white;
   }
- 
+
   /* Choices */
   .choices {
     display: grid;
     gap: 8px;
   }
- 
+
   .choice {
     display: flex;
     align-items: center;
@@ -250,31 +251,31 @@
     color: var(--text);
     text-align: left;
   }
- 
+
   .choice:hover:not(.disabled) {
     border-color: var(--accent);
     background: rgba(124,106,255,0.1);
   }
- 
+
   .choice.selected {
     border-color: var(--accent);
     background: rgba(124,106,255,0.15);
   }
- 
+
   .choice.correct {
     border-color: var(--correct);
     background: rgba(45,255,158,0.1);
     color: var(--correct);
   }
- 
+
   .choice.wrong {
     border-color: var(--wrong);
     background: rgba(255,77,109,0.1);
     color: var(--wrong);
   }
- 
+
   .choice.disabled { cursor: default; }
- 
+
   .choice-letter {
     width: 24px;
     height: 24px;
@@ -290,11 +291,11 @@
     font-family: 'Syne', sans-serif;
     transition: all 0.2s;
   }
- 
+
   .correct .choice-letter { background: var(--correct); border-color: var(--correct); color: #0a0a0f; }
   .wrong .choice-letter { background: var(--wrong); border-color: var(--wrong); color: white; }
   .selected .choice-letter { background: var(--accent); border-color: var(--accent); color: white; }
- 
+
   /* Explanation */
   .explanation {
     margin-top: 14px;
@@ -308,9 +309,9 @@
     display: none;
     animation: fadeUp 0.3s ease;
   }
- 
+
   .explanation.show { display: block; }
- 
+
   /* Exercices */
   .exo-card {
     background: var(--surface);
@@ -320,7 +321,7 @@
     margin-bottom: 16px;
     animation: fadeUp 0.4s ease;
   }
- 
+
   .exo-number {
     font-size: 11px;
     letter-spacing: 0.15em;
@@ -328,7 +329,7 @@
     text-transform: uppercase;
     margin-bottom: 10px;
   }
- 
+
   .exo-enonce {
     font-family: 'Syne', sans-serif;
     font-size: 15px;
@@ -337,7 +338,7 @@
     color: white;
     margin-bottom: 16px;
   }
- 
+
   .toggle-corrige {
     display: inline-flex;
     align-items: center;
@@ -352,11 +353,11 @@
     cursor: pointer;
     transition: all 0.2s;
   }
- 
+
   .toggle-corrige:hover {
     background: rgba(255,106,158,0.1);
   }
- 
+
   .corrige {
     margin-top: 14px;
     padding: 16px;
@@ -368,9 +369,9 @@
     color: var(--text);
     display: none;
   }
- 
+
   .corrige.show { display: block; animation: fadeUp 0.3s ease; }
- 
+
   /* Buttons */
   .btn {
     display: inline-flex;
@@ -386,28 +387,28 @@
     border: none;
     letter-spacing: 0.03em;
   }
- 
+
   .btn-primary {
     background: var(--accent);
     color: white;
   }
- 
+
   .btn-primary:hover {
     background: #9480ff;
     transform: translateY(-1px);
   }
- 
+
   .btn-ghost {
     background: none;
     border: 1px solid var(--border);
     color: var(--muted);
   }
- 
+
   .btn-ghost:hover {
     border-color: var(--accent);
     color: var(--accent);
   }
- 
+
   .btn-row {
     display: flex;
     gap: 10px;
@@ -415,14 +416,14 @@
     margin-top: 32px;
     flex-wrap: wrap;
   }
- 
+
   /* Result screen */
   .result-screen {
     text-align: center;
     padding: 48px 24px;
     animation: fadeUp 0.6s ease;
   }
- 
+
   .result-big {
     font-family: 'Syne', sans-serif;
     font-size: 80px;
@@ -434,7 +435,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
- 
+
   .result-label {
     font-size: 13px;
     color: var(--muted);
@@ -442,7 +443,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
- 
+
   .result-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -450,28 +451,28 @@
     max-width: 400px;
     margin: 0 auto 32px;
   }
- 
+
   .result-stat {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 16px;
   }
- 
+
   .result-stat-num {
     font-family: 'Syne', sans-serif;
     font-size: 24px;
     font-weight: 800;
     margin-bottom: 4px;
   }
- 
+
   .result-stat-label {
     font-size: 11px;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
- 
+
   /* JSON input zone */
   .json-input-zone {
     background: var(--surface);
@@ -480,7 +481,7 @@
     padding: 24px;
     margin-bottom: 24px;
   }
- 
+
   .json-input-zone label {
     display: block;
     font-size: 12px;
@@ -489,7 +490,7 @@
     text-transform: uppercase;
     margin-bottom: 10px;
   }
- 
+
   .json-textarea {
     width: 100%;
     height: 140px;
@@ -505,30 +506,30 @@
     transition: border-color 0.2s;
     line-height: 1.6;
   }
- 
+
   .json-textarea:focus {
     border-color: var(--accent);
   }
- 
+
   /* Hidden */
   .hidden { display: none !important; }
- 
+
   /* Animations */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
   }
- 
+
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-16px); }
     to { opacity: 1; transform: translateY(0); }
   }
- 
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
- 
+
   /* ── Welcome Screen ─────────────────────────────────── */
   #welcome-screen {
     position: fixed; inset: 0; background: #05050a;
@@ -601,8 +602,7 @@
 </style>
 </head>
 <body>
- 
-<!-- ── WELCOME SCREEN ─────────────────────────────── -->
+
 <div id="welcome-screen" onclick="dismissWelcome()">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
@@ -618,21 +618,19 @@
   </div>
   <div class="welcome-hint">Cliquer n'importe où pour continuer</div>
 </div>
- 
+
 <div class="container">
   <div class="header">
     <div class="badge">⚡ Quiz Engine</div>
-    <h1>Quiz Interactif</h1>
+    <h1 id="main-title">Quiz Interactif</h1>
   </div>
- 
-  <!-- Tabs -->
+
   <div class="tabs">
     <button class="tab active" onclick="switchTab('quiz')">QCM</button>
     <button class="tab" onclick="switchTab('exos')">Exercices</button>
     <button class="tab" onclick="switchTab('import')">Importer JSON</button>
   </div>
- 
-  <!-- QUIZ TAB -->
+
   <div id="tab-quiz">
     <div id="quiz-setup">
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
@@ -640,12 +638,12 @@
         <p>Colle ici le <strong>JSON généré par n8n</strong><br>ou clique pour charger un fichier</p>
       </div>
       <input type="file" id="fileInput" accept=".json" onchange="loadFile(event)">
- 
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="loadDemo()">▶ Charger démo</button>
       </div>
     </div>
- 
+
     <div id="quiz-running" class="hidden">
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
@@ -660,7 +658,7 @@
         <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="display:none">Suivant →</button>
       </div>
     </div>
- 
+
     <div id="quiz-result" class="hidden">
       <div class="result-screen">
         <div class="result-big" id="finalScore">0%</div>
@@ -686,8 +684,7 @@
       </div>
     </div>
   </div>
- 
-  <!-- EXOS TAB -->
+
   <div id="tab-exos" class="hidden">
     <div id="exosContainer">
       <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
@@ -699,8 +696,7 @@
       </div>
     </div>
   </div>
- 
-  <!-- IMPORT TAB -->
+
   <div id="tab-import" class="hidden">
     <div class="json-input-zone">
       <label>Colle ton JSON n8n ici</label>
@@ -715,13 +711,13 @@
     </div>
   </div>
 </div>
- 
+
 <script>
 // ── Auto-load from GitHub ──────────────────────────────
 const GITHUB_USER = 'mathprofr';
 const GITHUB_REPO = 'test-automatisation-QCM';
 const GITHUB_FILE = 'quiz.json';
- 
+
 async function autoLoadFromGitHub() {
   try {
     const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${GITHUB_FILE}?t=${Date.now()}`;
@@ -729,6 +725,7 @@ async function autoLoadFromGitHub() {
     if (!res.ok) throw new Error('Pas de quiz disponible');
     const data = await res.json();
     quizData = data;
+    updateAppTitle(); // Mise à jour du titre
     initQuiz();
     renderExos();
     document.getElementById('quiz-setup').classList.add('hidden');
@@ -736,14 +733,14 @@ async function autoLoadFromGitHub() {
     console.log('Pas de quiz GitHub:', e);
   }
 }
- 
+
 // ── State ──────────────────────────────────────────────
 let quizData = null;
 let currentQ = 0;
 let score = 0;
 let answered = [];
 let mode = 'quiz';
- 
+
 // ── Demo data ──────────────────────────────────────────
 const DEMO = {
   titre: "Les Ondes — Physique Terminale",
@@ -795,7 +792,17 @@ const DEMO = {
     }
   ]
 };
- 
+
+// ── Update App Title ───────────────────────────────────
+function updateAppTitle() {
+  const mainTitle = document.getElementById('main-title');
+  if (quizData && quizData.titre) {
+    mainTitle.textContent = quizData.titre;
+  } else {
+    mainTitle.textContent = "Quiz Interactif";
+  }
+}
+
 // ── Tab switching ──────────────────────────────────────
 function switchTab(tab) {
   mode = tab;
@@ -806,14 +813,15 @@ function switchTab(tab) {
   document.getElementById('tab-exos').classList.toggle('hidden', tab !== 'exos');
   document.getElementById('tab-import').classList.toggle('hidden', tab !== 'import');
 }
- 
+
 // ── Load demo ──────────────────────────────────────────
 function loadDemo() {
   quizData = DEMO;
+  updateAppTitle();
   initQuiz();
   renderExos();
 }
- 
+
 // ── Load file ──────────────────────────────────────────
 function loadFile(e) {
   const file = e.target.files[0];
@@ -822,6 +830,9 @@ function loadFile(e) {
   reader.onload = ev => {
     try {
       quizData = JSON.parse(ev.target.result);
+      // Si pas de titre dans le JSON, on utilise le nom du fichier sans l'extension
+      if(!quizData.titre) quizData.titre = file.name.replace('.json', '');
+      updateAppTitle();
       initQuiz();
       renderExos();
       switchTab('quiz');
@@ -831,11 +842,12 @@ function loadFile(e) {
   };
   reader.readAsText(file);
 }
- 
+
 // ── Import JSON ────────────────────────────────────────
 function importJSON() {
   try {
     quizData = JSON.parse(document.getElementById('jsonPaste').value);
+    updateAppTitle();
     initQuiz();
     renderExos();
     switchTab('quiz');
@@ -843,34 +855,34 @@ function importJSON() {
     alert('JSON invalide — vérifie le format');
   }
 }
- 
+
 // ── Init quiz ──────────────────────────────────────────
 function initQuiz() {
   currentQ = 0;
   score = 0;
   answered = new Array(quizData.questions.length).fill(null);
- 
+
   document.getElementById('quiz-setup').classList.add('hidden');
   document.getElementById('quiz-running').classList.remove('hidden');
   document.getElementById('quiz-result').classList.add('hidden');
- 
+
   renderQuestion();
 }
- 
+
 // ── Render question ────────────────────────────────────
 function renderQuestion() {
   const q = quizData.questions[currentQ];
   const total = quizData.questions.length;
- 
+
   document.getElementById('progressFill').style.width = ((currentQ / total) * 100) + '%';
   document.getElementById('questionCounter').textContent = `Question ${currentQ + 1} / ${total}`;
   document.getElementById('scoreDisplay').textContent = score;
   document.getElementById('nextBtn').style.display = 'none';
- 
+
   const letters = ['A', 'B', 'C', 'D', 'E'];
   const container = document.getElementById('questionsContainer');
   container.innerHTML = '';
- 
+
   const card = document.createElement('div');
   card.className = 'question-card';
   card.innerHTML = `
@@ -880,7 +892,7 @@ function renderQuestion() {
     <div class="explanation" id="expl">${q.explication || ''}</div>
   `;
   container.appendChild(card);
- 
+
   const choicesEl = card.querySelector('#choices');
   q.choix.forEach((c, i) => {
     const btn = document.createElement('button');
@@ -890,7 +902,7 @@ function renderQuestion() {
     choicesEl.appendChild(btn);
   });
 }
- 
+
 // ── Select answer ──────────────────────────────────────
 function selectAnswer(chosen, correct, idx) {
   const choices = document.querySelectorAll('.choice');
@@ -906,26 +918,26 @@ function selectAnswer(chosen, correct, idx) {
   }
   
   const isCorrect = chosen === correctText;
- 
+
   if (isCorrect) score++;
   answered[currentQ] = { chosen, correct: correctText, isCorrect };
- 
+
   choices.forEach((btn, i) => {
     btn.classList.add('disabled');
     btn.onclick = null;
     if (q.choix[i] === correctText) btn.classList.add('correct');
     else if (i === idx && !isCorrect) btn.classList.add('wrong');
   });
- 
+
   expl.classList.add('show');
   document.getElementById('scoreDisplay').textContent = score;
- 
+
   const isLast = currentQ === quizData.questions.length - 1;
   const nextBtn = document.getElementById('nextBtn');
   nextBtn.style.display = 'inline-flex';
   nextBtn.textContent = isLast ? 'Voir résultats ✓' : 'Suivant →';
 }
- 
+
 // ── Next question ──────────────────────────────────────
 function nextQuestion() {
   currentQ++;
@@ -935,21 +947,21 @@ function nextQuestion() {
     renderQuestion();
   }
 }
- 
+
 // ── Show result ────────────────────────────────────────
 function showResult() {
   const total = quizData.questions.length;
   const pct = Math.round((score / total) * 100);
- 
+
   document.getElementById('quiz-running').classList.add('hidden');
   document.getElementById('quiz-result').classList.remove('hidden');
- 
+
   document.getElementById('finalScore').textContent = pct + '%';
   document.getElementById('statCorrect').textContent = score;
   document.getElementById('statWrong').textContent = total - score;
   document.getElementById('statTotal').textContent = total;
 }
- 
+
 // ── Review ─────────────────────────────────────────────
 function reviewAnswers() {
   currentQ = 0;
@@ -957,16 +969,16 @@ function reviewAnswers() {
   document.getElementById('quiz-result').classList.add('hidden');
   document.getElementById('quiz-running').classList.remove('hidden');
   document.getElementById('nextBtn').style.display = 'none';
- 
+
   const container = document.getElementById('questionsContainer');
   container.innerHTML = '';
   const letters = ['A', 'B', 'C', 'D'];
- 
+
   quizData.questions.forEach((q, qi) => {
     const ans = answered[qi];
     const card = document.createElement('div');
     card.className = 'question-card';
- 
+
     let choicesHTML = '';
     q.choix.forEach((c, i) => {
       let cls = 'choice disabled';
@@ -974,7 +986,7 @@ function reviewAnswers() {
       else if (ans && c === ans.chosen && !ans.isCorrect) cls += ' wrong';
       choicesHTML += `<div class="${cls}"><span class="choice-letter">${letters[i]}</span>${c}</div>`;
     });
- 
+
     card.innerHTML = `
       <div class="q-number">Question ${qi + 1}</div>
       <div class="q-text">${q.question}</div>
@@ -983,32 +995,26 @@ function reviewAnswers() {
     `;
     container.appendChild(card);
   });
- 
+
   document.getElementById('progressFill').style.width = '100%';
   document.getElementById('questionCounter').textContent = `Révision — ${quizData.questions.length} questions`;
 }
- 
+
 // ── Reset ──────────────────────────────────────────────
 function resetQuiz() {
   quizData = null;
+  updateAppTitle();
   document.getElementById('quiz-setup').classList.remove('hidden');
   document.getElementById('quiz-running').classList.add('hidden');
   document.getElementById('quiz-result').classList.add('hidden');
 }
- 
+
 // ── Render exercices ───────────────────────────────────
 function renderExos() {
   if (!quizData || !quizData.exercices) return;
   const container = document.getElementById('exosContainer');
   container.innerHTML = '';
- 
-  if (quizData.titre) {
-    const t = document.createElement('div');
-    t.style.cssText = 'font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:24px;';
-    t.textContent = quizData.titre;
-    container.appendChild(t);
-  }
- 
+
   quizData.exercices.forEach((ex, i) => {
     const card = document.createElement('div');
     card.className = 'exo-card';
@@ -1023,44 +1029,21 @@ function renderExos() {
     container.appendChild(card);
   });
 }
- 
+
 function toggleCorrige(i) {
   const el = document.getElementById(`corrige-${i}`);
   const icon = document.getElementById(`corrige-icon-${i}`);
   el.classList.toggle('show');
   icon.textContent = el.classList.contains('show') ? '▲' : '▼';
 }
- 
- 
+
 // ── Welcome Screen ─────────────────────────────────
 function dismissWelcome() {
   const ws = document.getElementById('welcome-screen');
   ws.classList.add('fade-out');
-  setTimeout(() => { ws.style.display = 'none'; }, 900);
-}
- 
-// ── Appel auto-load ───────────────────────────────────
-autoLoadFromGitHub();
- 
-// ── Drag & drop ────────────────────────────────────────
-const zone = document.getElementById('uploadZone');
-if (zone) {
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('drag');
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        try { quizData = JSON.parse(ev.target.result); initQuiz(); renderExos(); } catch { alert('JSON invalide'); }
-      };
-      reader.readAsText(file);
-    }
-  });
+  // Tentative de chargement auto au démarrage
+  autoLoadFromGitHub();
 }
 </script>
 </body>
 </html>
- 
