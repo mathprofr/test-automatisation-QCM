@@ -3,21 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Engine IA - Audio Pro</title>
+    <title>Quiz Engine IA - Pro & Live</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050508;
-            --surface: #0f0f17;
-            --surface-light: #161621;
-            --accent: #7c6aff;
-            --accent-glow: rgba(124, 106, 255, 0.3);
-            --accent2: #ff6a9e;
-            --accent3: #6affd4;
-            --text: #e8e8f0;
-            --muted: #6b6b80;
-            --correct: #2dff9e;
-            --wrong: #ff4d6d;
+            --bg: #050508; --surface: #0f0f17; --surface-light: #161621;
+            --accent: #7c6aff; --accent-glow: rgba(124, 106, 255, 0.3);
+            --accent2: #ff6a9e; --accent3: #6affd4; --text: #e8e8f0;
+            --muted: #6b6b80; --correct: #2dff9e; --wrong: #ff4d6d;
             --border: rgba(124, 106, 255, 0.15);
         }
 
@@ -33,7 +26,7 @@
 
         .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
 
-        /* --- Screens --- */
+        /* --- Welcome --- */
         #welcome-screen {
             position: fixed; inset: 0; background: var(--bg); z-index: 2000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -41,7 +34,8 @@
         }
         #welcome-screen.hide { opacity: 0; pointer-events: none; }
         .welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
+
+        /* --- Layout --- */
         .header { text-align: center; margin-bottom: 35px; }
         .header h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-top: 10px; }
         .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; }
@@ -50,11 +44,11 @@
         .tab { flex: 1; padding: 12px; background: none; border: none; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .tab.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
 
-        .card-lobby { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
-        .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; animation: slideUp 0.4s ease; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 45px 25px; text-align: center; animation: zoomIn 0.4s ease; }
+        .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 25px; text-align: left; animation: slideUp 0.4s ease; }
         
-        .choices { display: grid; gap: 10px; }
-        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; }
+        .choices { display: grid; gap: 10px; margin-top: 20px; }
+        .choice { display: flex; align-items: center; padding: 15px; background: var(--surface-light); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: 0.2s; color: var(--text); font-family: inherit; font-size: 14px; text-align: left; }
         .choice:hover:not(.disabled) { border-color: var(--accent); background: rgba(124, 106, 255, 0.08); }
         .choice.correct { border-color: var(--correct); background: rgba(45, 255, 158, 0.08); color: var(--correct); }
         .choice.wrong { border-color: var(--wrong); background: rgba(255, 77, 109, 0.08); color: var(--wrong); }
@@ -73,15 +67,15 @@
     <div class="bg-glow"></div>
 
     <div id="welcome-screen">
-        <h1 class="welcome-title">Quiz Engine Pro</h1>
-        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Expérience Audio & Sync n8n</p>
-        <button class="btn btn-primary" onclick="initApp()">Activer l'audio et entrer →</button>
+        <h1 class="welcome-title">Quiz Engine</h1>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:25px;">Synchronisation Directe n8n</p>
+        <button class="btn btn-primary" onclick="initApp()">Entrer dans l'espace →</button>
     </div>
 
     <div class="container">
         <div class="header">
-            <span class="badge" id="sync-status">Initialisation</span>
-            <h1 id="main-title">En attente...</h1>
+            <span class="badge" id="sync-status">Prêt</span>
+            <h1 id="main-title">Chargement...</h1>
         </div>
 
         <div class="tabs">
@@ -92,11 +86,11 @@
 
         <div id="view-quiz">
             <div id="quiz-lobby" class="hidden">
-                <div class="card-lobby">
-                    <span style="font-size:35px; display:block; margin-bottom:15px;">🎧</span>
-                    <h2 id="lobby-name" style="margin-bottom:8px;">Chargé</h2>
+                <div class="card">
+                    <span style="font-size:35px; display:block; margin-bottom:15px;">🚀</span>
+                    <h2 id="lobby-name" style="margin-bottom:8px;">Quiz</h2>
                     <p id="lobby-details" style="color:var(--muted); font-size:13px; margin-bottom:30px;"></p>
-                    <button class="btn btn-primary" onclick="startQuiz()">Lancer la session</button>
+                    <button class="btn btn-primary" onclick="startQuiz()">Lancer le quiz</button>
                 </div>
             </div>
 
@@ -108,9 +102,9 @@
             </div>
 
             <div id="quiz-results" class="hidden">
-                <div class="card-lobby">
+                <div class="card">
                     <div style="font-size:48px; font-weight:800; color:var(--accent); margin-bottom:10px" id="score-pct">0%</div>
-                    <p style="margin-bottom:25px;">Session terminée avec succès !</p>
+                    <p style="margin-bottom:25px;">Excellent travail !</p>
                     <button class="btn btn-primary" onclick="showLobby()">↺ Recommencer</button>
                 </div>
             </div>
@@ -121,9 +115,9 @@
         </div>
 
         <div id="view-import" class="hidden">
-            <div class="question-card">
-                <p style="font-size:11px; color:var(--accent); margin-bottom:12px;">OUTILS DE DÉVELOPPEMENT</p>
-                <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">FORCER SYNC API n8n</button>
+            <div class="q-card">
+                <p style="font-size:11px; color:var(--accent); margin-bottom:15px;">DÉVELOPPEMENT</p>
+                <button class="btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="fetchGitHubData()">FORCER MISE À JOUR LIVE</button>
                 <button class="btn btn-ghost" style="width:100%; font-size:11px;" onclick="localStorage.clear(); location.reload();">Vider le cache</button>
             </div>
         </div>
@@ -132,55 +126,44 @@
     <script>
         let state = { data: null, currentIdx: 0, score: 0, audioCtx: null };
 
-        // --- Moteur Audio Synthétique ---
+        // --- Audio Pro ---
         function playSfx(type) {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const ctx = state.audioCtx;
-            const masterGain = ctx.createGain();
-            masterGain.gain.setValueAtTime(0.4, ctx.currentTime); // VOLUME AUGMENTÉ ICI
-            masterGain.connect(ctx.destination);
-
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.connect(g);
-            g.connect(masterGain);
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.5, ctx.currentTime);
+            master.connect(ctx.destination);
 
             if (type === 'correct') {
-                // Son montant joyeux (Bip-Bip !)
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(500, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
-                g.gain.setValueAtTime(0.2, ctx.currentTime);
+                const o = ctx.createOscillator(); const g = ctx.createGain();
+                o.type = 'sine'; o.connect(g); g.connect(master);
+                o.frequency.setValueAtTime(523, ctx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.3, ctx.currentTime);
                 g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.start(); osc.stop(ctx.currentTime + 0.3);
-            } 
-            else if (type === 'wrong') {
-                // Son grave descendant (Booo...)
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(200, ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.4);
-                g.gain.setValueAtTime(0.1, ctx.currentTime);
-                g.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-                osc.start(); osc.stop(ctx.currentTime + 0.4);
-            }
-            else if (type === 'victory') {
-                // Petite mélodie finale
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, i) => {
-                    const o = ctx.createOscillator();
-                    const gn = ctx.createGain();
-                    o.connect(gn); gn.connect(masterGain);
-                    o.frequency.setValueAtTime(freq, ctx.currentTime + (i * 0.15));
-                    gn.gain.setValueAtTime(0.1, ctx.currentTime + (i * 0.15));
-                    gn.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i * 0.15) + 0.4);
-                    o.start(ctx.currentTime + (i * 0.15));
-                    o.stop(ctx.currentTime + (i * 0.15) + 0.4);
+                o.start(); o.stop(ctx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                const o = ctx.createOscillator(); const g = ctx.createGain();
+                o.type = 'triangle'; o.connect(g); g.connect(master);
+                o.frequency.setValueAtTime(220, ctx.currentTime);
+                o.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
+                g.gain.setValueAtTime(0.2, ctx.currentTime);
+                g.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                o.start(); o.stop(ctx.currentTime + 0.3);
+            } else if (type === 'victory') {
+                [523, 659, 783, 1046].forEach((f, i) => {
+                    const o = ctx.createOscillator(); const g = ctx.createGain();
+                    o.connect(g); g.connect(master);
+                    o.frequency.setValueAtTime(f, ctx.currentTime + (i*0.1));
+                    g.gain.setValueAtTime(0.1, ctx.currentTime + (i*0.1));
+                    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i*0.1) + 0.5);
+                    o.start(ctx.currentTime + (i*0.1)); o.stop(ctx.currentTime + (i*0.1) + 0.5);
                 });
             }
         }
 
-        // --- Core Logique ---
-        const REPO_CONFIG = { user: "mathprofr", repo: "test-automatisation-QCM", path: "quiz.json" };
+        // --- Data handling ---
+        const CONFIG = { user: "mathprofr", repo: "test-automatisation-QCM", path: "quiz.json" };
 
         function initApp() {
             document.getElementById('welcome-screen').classList.add('hide');
@@ -195,26 +178,31 @@
 
         async function fetchGitHubData() {
             const status = document.getElementById('sync-status');
-            status.textContent = "SYNCHRONISATION...";
+            status.textContent = "SYNC...";
             try {
-                const url = `https://api.github.com/repos/${REPO_CONFIG.user}/${REPO_CONFIG.repo}/contents/${REPO_CONFIG.path}?t=${Date.now()}`;
-                const res = await fetch(url, { headers: { 'Cache-Control': 'no-cache' } });
+                // Pas de headers cache-control pour éviter le blocage CORS
+                const url = `https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`;
+                const res = await fetch(url);
                 if (res.ok) {
                     const json = await res.json();
                     const binary = atob(json.content.replace(/\s/g, ''));
                     const utf8Text = decodeURIComponent(escape(binary));
                     state.data = JSON.parse(utf8Text);
                     localStorage.setItem('quiz_cache', JSON.stringify(state.data));
-                    status.textContent = "API LIVE";
+                    status.textContent = "LIVE";
                     showLobby();
                 }
-            } catch (e) { status.textContent = "ERREUR SYNC"; }
+            } catch (e) { 
+                status.textContent = "OFFLINE";
+                console.error("Fetch error:", e);
+            }
         }
 
         function showLobby() {
             if (!state.data) return;
             document.getElementById('main-title').textContent = state.data.titre || "Quiz";
-            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions prêtes`;
+            document.getElementById('lobby-name').textContent = state.data.titre || "Prêt";
+            document.getElementById('lobby-details').textContent = `${state.data.questions.length} questions • Via API n8n`;
             document.getElementById('quiz-lobby').classList.remove('hidden');
             document.getElementById('quiz-running').classList.add('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
@@ -233,10 +221,10 @@
             const container = document.getElementById('question-container');
             document.getElementById('btn-next').classList.add('hidden');
             container.innerHTML = `
-                <div class="question-card">
-                    <p style="font-size:11px; color:var(--accent); margin-bottom:12px;">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
-                    <h2 style="font-family:'Syne'; font-size:17px; color:#fff; margin-bottom:20px;">${q.question}</h2>
-                    <div class="choices" id="choice-grid"></div>
+                <div class="q-card">
+                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px;">QUESTION ${state.currentIdx + 1} / ${state.data.questions.length}</p>
+                    <h2 style="font-family:'Syne'; font-size:18px;">${q.question}</h2>
+                    <div class="choices" id="choices"></div>
                     <div id="expl" class="hidden" style="margin-top:20px; padding:15px; background:rgba(106,255,212,0.05); border-radius:8px; font-size:13px; color:var(--accent3); border-left:2px solid var(--accent3);">
                         ${q.explication || ''}
                     </div>
@@ -247,23 +235,17 @@
                 b.className = 'choice';
                 b.innerHTML = `<span style="color:var(--accent); font-weight:800; margin-right:12px">${String.fromCharCode(65+i)}</span> ${c}`;
                 b.onclick = () => {
-                    const all = document.querySelectorAll('.choice');
-                    const isWin = (c === q.reponse);
-                    if(isWin) {
-                        state.score++;
-                        playSfx('correct');
-                    } else {
-                        playSfx('wrong');
-                    }
-                    all.forEach(btn => {
+                    const win = (c === q.reponse);
+                    if(win) { state.score++; playSfx('correct'); } else { playSfx('wrong'); }
+                    document.querySelectorAll('.choice').forEach(btn => {
                         btn.classList.add('disabled'); btn.onclick = null;
                         if(btn.innerText.includes(q.reponse)) btn.classList.add('correct');
                     });
-                    if(!isWin) b.classList.add('wrong');
+                    if(!win) b.classList.add('wrong');
                     document.getElementById('expl').classList.remove('hidden');
                     document.getElementById('btn-next').classList.remove('hidden');
                 };
-                document.getElementById('choice-grid').appendChild(b);
+                document.getElementById('choices').appendChild(b);
             });
         }
 
@@ -289,10 +271,10 @@
             const list = document.getElementById('exos-list');
             if(!state.data.exercices) return;
             list.innerHTML = state.data.exercices.map((ex, i) => `
-                <div class="question-card" style="margin-bottom:15px">
-                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px">EXERCICE ${i+1}</p>
-                    <p style="font-size:14px; margin-bottom:10px">${ex.enonce}</p>
-                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px;">VOIR CORRIGÉ</summary>
+                <div class="q-card" style="margin-bottom:15px">
+                    <p style="font-size:11px; color:var(--accent)">EXERCICE ${i+1}</p>
+                    <p style="font-size:14px; margin:10px 0;">${ex.enonce}</p>
+                    <details><summary style="cursor:pointer; color:var(--accent3); font-size:11px;">VOIR SOLUTION</summary>
                     <div style="margin-top:10px; font-size:13px; color:var(--muted)">${ex.corrige}</div></details>
                 </div>`).join('');
         }
