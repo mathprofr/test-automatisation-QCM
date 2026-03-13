@@ -1,0 +1,247 @@
+{
+  "titre": "Ondes",
+  "matiere": "Physique",
+  "questions": [
+    {
+      "question": "Qu'est-ce qu'une onde progressive ?",
+      "type": "qcm",
+      "choix": [
+        "Onde qui se propage de proche en proche dans un milieu",
+        "Onde qui déforme la matière",
+        "Onde qui transporte de la matière",
+        "Onde qui ne transporte pas d'énergie"
+      ],
+      "reponse": "A.",
+      "explication": "Une onde progressive est une onde qui se propage de proche en proche dans un milieu, transportant de l'énergie sans déplacer de matière"
+    },
+    {
+      "question": "Qu'est-ce qu'une onde mécanique ?",
+      "type": "qcm",
+      "choix": [
+        "Perturbation s'accompagnant d'une déformation de la matière",
+        "Perturbation ne déformant pas la matière",
+        "Déplacement de matière dans un milieu",
+        "Déplacement d'énergie dans un milieu"
+      ],
+      "reponse": "A.",
+      "explication": "Une onde mécanique est une perturbation s'accompagnant d'une déformation de la matière"
+    },
+    {
+      "question": "Qu'est-ce qu'une onde longitudinale ?",
+      "type": "qcm",
+      "choix": [
+        "La déformation du milieu est perpendiculaire au déplacement de l'onde",
+        "La déformation du milieu est parallèle au déplacement de l'onde",
+        "La déformation du milieu est circulaire",
+        "La déformation du milieu est elliptique"
+      ],
+      "reponse": "B.",
+      "explication": "Une onde longitudinale est une onde où la déformation du milieu est parallèle au déplacement de l'onde"
+    },
+    {
+      "question": "Qu'est-ce qu'une onde transversale ?",
+      "type": "qcm",
+      "choix": [
+        "La déformation du milieu est parallèle au déplacement de l'onde",
+        "La déformation du milieu est perpendiculaire au déplacement de l'onde",
+        "La déformation du milieu est circulaire",
+        "La déformation du milieu est elliptique"
+      ],
+      "reponse": "B.",
+      "explication": "Une onde transversale est une onde où la déformation du milieu est perpendiculaire au déplacement de l'onde"
+    },
+    {
+      "question": "Qu'est-ce qu'une onde non mécanique ?",
+      "type": "qcm",
+      "choix": [
+        "Onde déformant la matière",
+        "Onde ne déformant pas la matière",
+        "Onde transportant de la matière",
+        "Onde ne transportant pas d'énergie"
+      ],
+      "reponse": "B.",
+      "explication": "Une onde non mécanique est une onde ne déformant pas la matière"
+    },
+    {
+      "question": "Qu'est-ce qu'une propagation ?",
+      "type": "qcm",
+      "choix": [
+        "Une onde se propage dans une seule direction",
+        "Une onde se propage dans toutes les directions possibles",
+        "Une onde ne se propage pas",
+        "Une onde se propage de manière aléatoire"
+      ],
+      "reponse": "B.",
+      "explication": "Une propagation est le fait qu'une onde se propage dans toutes les directions possibles"
+    },
+    {
+      "question": "Qu'est-ce qu'un phénomène périodique ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène qui se répète à l'identique",
+        "Phénomène qui ne se répète pas",
+        "Phénomène aléatoire",
+        "Phénomène constant"
+      ],
+      "reponse": "A.",
+      "explication": "Un phénomène périodique est un phénomène qui se répète à l'identique"
+    },
+    {
+      "question": "Qu'est-ce que la période (T) ?",
+      "type": "qcm",
+      "choix": [
+        "Écart le plus petit entre deux points à position verticale différente",
+        "Écart le plus petit entre deux points à position verticale identique",
+        "Temps de propagation d'une onde",
+        "Distance de propagation d'une onde"
+      ],
+      "reponse": "B.",
+      "explication": "La période (T) est l'écart le plus petit entre deux points à position verticale identique"
+    },
+    {
+      "question": "Qu'est-ce que la double périodicité ?",
+      "type": "qcm",
+      "choix": [
+        "Périodicité spatiale et temporelle",
+        "Périodicité spatiale ou temporelle",
+        "Périodicité aléatoire",
+        "Périodicité constante"
+      ],
+      "reponse": "A.",
+      "explication": "La double périodicité est la périodicité spatiale (λ) et temporelle (T)"
+    },
+    {
+      "question": "Qu'est-ce que la vitesse d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Distance parcourue par l'onde par unité de temps",
+        "Temps mis par l'onde pour parcourir une distance",
+        "Énergie transportée par l'onde",
+        "Fréquence de l'onde"
+      ],
+      "reponse": "A.",
+      "explication": "La vitesse d'une onde est la distance parcourue par l'onde par unité de temps"
+    },
+    {
+      "question": "Qu'est-ce que la fréquence d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Nombre d'oscillations par unité de temps",
+        "Distance parcourue par l'onde par unité de temps",
+        "Temps mis par l'onde pour parcourir une distance",
+        "Énergie transportée par l'onde"
+      ],
+      "reponse": "A.",
+      "explication": "La fréquence d'une onde est le nombre d'oscillations par unité de temps"
+    },
+    {
+      "question": "Qu'est-ce que la longueur d'onde d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Distance entre deux points à position verticale identique",
+        "Distance entre deux points à position verticale différente",
+        "Temps de propagation d'une onde",
+        "Énergie transportée par l'onde"
+      ],
+      "reponse": "A.",
+      "explication": "La longueur d'onde d'une onde est la distance entre deux points à position verticale identique"
+    },
+    {
+      "question": "Qu'est-ce que l'amplitude d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Distance entre le point le plus haut et le point le plus bas de l'onde",
+        "Distance entre deux points à position verticale identique",
+        "Temps de propagation d'une onde",
+        "Énergie transportée par l'onde"
+      ],
+      "reponse": "A.",
+      "explication": "L'amplitude d'une onde est la distance entre le point le plus haut et le point le plus bas de l'onde"
+    },
+    {
+      "question": "Qu'est-ce que la phase d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Position de l'onde à un instant donné",
+        "Vitesse de l'onde",
+        "Fréquence de l'onde",
+        "Longueur d'onde de l'onde"
+      ],
+      "reponse": "A.",
+      "explication": "La phase d'une onde est la position de l'onde à un instant donné"
+    },
+    {
+      "question": "Qu'est-ce qu'un front d'onde ?",
+      "type": "qcm",
+      "choix": [
+        "Ligne qui relie les points de même phase",
+        "Ligne qui relie les points de phase opposée",
+        "Ligne qui relie les points de même vitesse",
+        "Ligne qui relie les points de même fréquence"
+      ],
+      "reponse": "A.",
+      "explication": "Un front d'onde est la ligne qui relie les points de même phase"
+    },
+    {
+      "question": "Qu'est-ce que la réflexion d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène par lequel une onde est renvoyée par une surface",
+        "Phénomène par lequel une onde est absorbée par une surface",
+        "Phénomène par lequel une onde est transmise à travers une surface",
+        "Phénomène par lequel une onde est déviée par une surface"
+      ],
+      "reponse": "A.",
+      "explication": "La réflexion d'une onde est le phénomène par lequel une onde est renvoyée par une surface"
+    },
+    {
+      "question": "Qu'est-ce que la réfraction d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène par lequel une onde est déviée en passant d'un milieu à un autre",
+        "Phénomène par lequel une onde est renvoyée par une surface",
+        "Phénomène par lequel une onde est absorbée par une surface",
+        "Phénomène par lequel une onde est transmise à travers une surface"
+      ],
+      "reponse": "A.",
+      "explication": "La réfraction d'une onde est le phénomène par lequel une onde est déviée en passant d'un milieu à un autre"
+    },
+    {
+      "question": "Qu'est-ce que la diffraction d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène par lequel une onde est déviée en passant par un obstacle",
+        "Phénomène par lequel une onde est renvoyée par une surface",
+        "Phénomène par lequel une onde est absorbée par une surface",
+        "Phénomène par lequel une onde est transmise à travers une surface"
+      ],
+      "reponse": "A.",
+      "explication": "La diffraction d'une onde est le phénomène par lequel une onde est déviée en passant par un obstacle"
+    },
+    {
+      "question": "Qu'est-ce que l'interférence d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène par lequel deux ondes se superposent",
+        "Phénomène par lequel deux ondes se détruisent",
+        "Phénomène par lequel deux ondes se renforcent",
+        "Phénomène par lequel deux ondes se dévient"
+      ],
+      "reponse": "A.",
+      "explication": "L'interférence d'une ode est le phénomène par lequel deux ondes se superposent"
+    },
+    {
+      "question": "Qu'est-ce que la polarisation d'une onde ?",
+      "type": "qcm",
+      "choix": [
+        "Phénomène par lequel une onde est orientée dans une direction particulière",
+        "Phénomène par lequel une onde est déviée en passant par un obstacle",
+        "Phénomène par lequel une onde est renvoyée par une surface",
+        "Phénomène par lequel une onde est transmise à travers une surface"
+      ],
+      "reponse": "A.",
+      "explication": "La polarisation d'une onde est le phénomène par lequel une onde est orientée dans une direction particulière"
+    }
+  ],
+  "exercices": []
+}
